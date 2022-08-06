@@ -28,3 +28,18 @@ export interface ChatMessageType {
   textMessage: string;
   isEmoteOnly: boolean;
 }
+
+export interface FollowInfoType {
+  followerDisplayName: string;
+  followerId: string;
+  followerLogin: string;
+
+  streamerDisplayName: string;
+  streamerId: string;
+  streamerLogin: string;
+
+  timestamp: {
+    nanoseconds: number;
+    seconds: number;
+  };
+}

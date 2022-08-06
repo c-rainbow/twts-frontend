@@ -10,46 +10,46 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
-const MAX_SIZE = 30;
-
-interface FollowInfoType {
-  followerDisplayName: string;
-  followerId: string;
-  followerLogin: string;
-
-  streamerDisplayName: string;
-  streamerId: string;
-  streamerLogin: string;
-
-  timestamp: Date;
-}
+import { useFollowInfoStore } from '@/states';
+import type { FollowInfoType } from '@/types/types';
 
 function RecentFollowerList() {
-  const [followers, setFollowers] = useState<FollowInfoType[]>([]);
+  const [followInfos, addFollowInfos] = useFollowInfoStore((state) => [
+    state.followInfos,
+    state.addFollowInfos,
+  ]);
 
-  const updateFollowerList = (newFollowers: FollowInfoType[]) => {
-    const followerMap = new Map<string, FollowInfoType>();
-    followers.forEach((follower) =>
-      followerMap.set(follower.followerId, follower)
+  const updateFollowerList = (newFollowInfos: FollowInfoType[]) => {
+    console.log('newFollowInfos:', newFollowInfos);
+    console.log('followInfos:', followInfos);
+    /*
+    const followInfoMap = new Map<string, FollowInfoType>();
+    followInfos.forEach((followInfo) =>
+      followInfoMap.set(followInfo.followerId, followInfo)
     );
-    newFollowers.forEach((follower) =>
-      followerMap.set(follower.followerId, follower)
+    newFollowInfos.forEach((followInfo) =>
+      followInfoMap.set(followInfo.followerId, followInfo)
     );
 
-    let newList = Array.from(followerMap.values());
+    let newList = Array.from(followInfoMap.values());
+    console.log('newList:', newFollowInfos);
+    /*
     newList.sort((a, b) => {
-      if (a.timestamp > b.timestamp) return -1;
-      if (a.timestamp < b.timestamp) return 1;
+      if (a.timestamp.seconds > b.timestamp.seconds) return -1;
+      if (a.timestamp.seconds < b.timestamp.seconds) return 1;
       // Just for tie-breaking in rare cases
       return a.followerId.localeCompare(b.followerId);
     });
-
+    */
+    /*
     if (newList.length > MAX_SIZE) {
       newList = newList.slice(0, MAX_SIZE);
     }
-    setFollowers(newList);
+    */
+    console.log('newlist final:', newFollowInfos);
+    addFollowInfos(newFollowInfos);
   };
 
   useEffect(() => {
@@ -68,21 +68,25 @@ function RecentFollowerList() {
     // const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
+    const now = new Date();
     const func = async () => {
       // TODO: remove hardcoded value
       const q2 = query(
         collection(db, 'followers'),
-        where('streamerId', '==', '403883450')
+        where('streamerId', '==', '403883450'),
+        where('timestamp', '>', now),
+        orderBy('timestamp', 'desc')
       );
       onSnapshot(q2, (snapshot) => {
         // console.log("Current data: ", doc.data());
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
             console.log('New: ', change.doc.data());
-            updateFollowerList([change.doc.data() as FollowInfoType]);
+            updateFollowerList([{ ...(change.doc.data() as FollowInfoType) }]);
           }
           if (change.type === 'modified') {
             console.log('Modified: ', change.doc.data());
+            updateFollowerList([{ ...(change.doc.data() as FollowInfoType) }]);
           }
           if (change.type === 'removed') {
             console.log('Removed: ', change.doc.data());
@@ -94,10 +98,12 @@ function RecentFollowerList() {
         collection(db, 'followers'),
         where('streamerId', '==', '403883450'),
         orderBy('timestamp', 'desc'),
-        limit(10)
+        limit(5)
       );
       const querySnapshot = await getDocs(q1);
-      const initialFollowerList = querySnapshot.docs.map((doc) => doc.data());
+      const initialFollowerList = querySnapshot.docs.map((doc) => ({
+        ...(doc.data() as FollowInfoType),
+      }));
       updateFollowerList(initialFollowerList as FollowInfoType[]);
     };
     func();
@@ -105,7 +111,18 @@ function RecentFollowerList() {
 
   return (
     <>
-      <div>Hello</div>
+      <div>
+        {followInfos.map((followInfo) => {
+          return (
+            <div key={followInfo.followerId}>
+              <>
+                {followInfo.followerDisplayName},{' '}
+                {new Date(followInfo.timestamp.seconds * 1000).toISOString()}
+              </>
+            </div>
+          );
+        })}
+      </div>
     </>
   );
 }
