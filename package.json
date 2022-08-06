@@ -23,7 +23,8 @@
     "next": "^12.2.2",
     "next-seo": "^5.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tmi.js": "^1.8.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.0.3",
@@ -35,6 +36,7 @@
     "@types/jest": "^28.1.5",
     "@types/node": "^18.0.4",
     "@types/react": "^18.0.15",
+    "@types/tmi.js": "^1.8.1",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "autoprefixer": "^10.4.7",
