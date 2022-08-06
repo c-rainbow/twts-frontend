@@ -7,7 +7,7 @@ function compareFollowInfo(a: FollowInfoType, b: FollowInfoType) {
     .valueOf()
     .localeCompare(b.timestamp.valueOf());
   if (timestampCompare !== 0) {
-    return timestampCompare;
+    return -timestampCompare; // Descending order
   }
   // Just for tie-breaking when two people followed at the same nanosecond
   return a.followerId.localeCompare(b.followerId);
