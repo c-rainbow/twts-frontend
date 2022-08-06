@@ -1,3 +1,4 @@
+import type { Timestamp } from 'firebase/firestore';
 import type { ChatUserstate } from 'tmi.js';
 
 export interface TwitchEmoteTags {
@@ -27,6 +28,9 @@ export interface ChatMessageType {
   fullName: string;
   textMessage: string;
   isEmoteOnly: boolean;
+
+  // Cache for translation
+  translation?: ChatMessageType;
 }
 
 export interface FollowInfoType {
@@ -38,8 +42,5 @@ export interface FollowInfoType {
   streamerId: string;
   streamerLogin: string;
 
-  timestamp: {
-    nanoseconds: number;
-    seconds: number;
-  };
+  timestamp: Timestamp;
 }

@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app';
 // import { getAnalytics } from "firebase/analytics";
 import {
   collection,
-  getDocs,
   getFirestore,
   limit,
   onSnapshot,
@@ -12,45 +11,14 @@ import {
 } from 'firebase/firestore';
 import { useEffect } from 'react';
 
-import { useFollowInfoStore } from '@/states';
+import { useFollowInfoStore } from '@/states/follows';
 import type { FollowInfoType } from '@/types/types';
 
 function RecentFollowerList() {
-  const [followInfos, addFollowInfos] = useFollowInfoStore((state) => [
+  const [followInfos, addFollows] = useFollowInfoStore((state) => [
     state.followInfos,
-    state.addFollowInfos,
+    state.addFollows,
   ]);
-
-  const updateFollowerList = (newFollowInfos: FollowInfoType[]) => {
-    console.log('newFollowInfos:', newFollowInfos);
-    console.log('followInfos:', followInfos);
-    /*
-    const followInfoMap = new Map<string, FollowInfoType>();
-    followInfos.forEach((followInfo) =>
-      followInfoMap.set(followInfo.followerId, followInfo)
-    );
-    newFollowInfos.forEach((followInfo) =>
-      followInfoMap.set(followInfo.followerId, followInfo)
-    );
-
-    let newList = Array.from(followInfoMap.values());
-    console.log('newList:', newFollowInfos);
-    /*
-    newList.sort((a, b) => {
-      if (a.timestamp.seconds > b.timestamp.seconds) return -1;
-      if (a.timestamp.seconds < b.timestamp.seconds) return 1;
-      // Just for tie-breaking in rare cases
-      return a.followerId.localeCompare(b.followerId);
-    });
-    */
-    /*
-    if (newList.length > MAX_SIZE) {
-      newList = newList.slice(0, MAX_SIZE);
-    }
-    */
-    console.log('newlist final:', newFollowInfos);
-    addFollowInfos(newFollowInfos);
-  };
 
   useEffect(() => {
     const firebaseConfig = {
@@ -65,46 +33,34 @@ function RecentFollowerList() {
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    // const analytics = getAnalytics(app);
     const db = getFirestore(app);
 
-    const now = new Date();
     const func = async () => {
       // TODO: remove hardcoded value
       const q2 = query(
         collection(db, 'followers'),
         where('streamerId', '==', '403883450'),
-        where('timestamp', '>', now),
-        orderBy('timestamp', 'desc')
+        orderBy('timestamp', 'desc'),
+        limit(20)
       );
       onSnapshot(q2, (snapshot) => {
         // console.log("Current data: ", doc.data());
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
             console.log('New: ', change.doc.data());
-            updateFollowerList([{ ...(change.doc.data() as FollowInfoType) }]);
+            addFollows([change.doc.data() as FollowInfoType]);
           }
+          /*
           if (change.type === 'modified') {
             console.log('Modified: ', change.doc.data());
-            updateFollowerList([{ ...(change.doc.data() as FollowInfoType) }]);
+            updateFollowerList([change.doc.data() as FollowInfoType]);
           }
           if (change.type === 'removed') {
             console.log('Removed: ', change.doc.data());
           }
+          */
         });
       });
-
-      const q1 = query(
-        collection(db, 'followers'),
-        where('streamerId', '==', '403883450'),
-        orderBy('timestamp', 'desc'),
-        limit(5)
-      );
-      const querySnapshot = await getDocs(q1);
-      const initialFollowerList = querySnapshot.docs.map((doc) => ({
-        ...(doc.data() as FollowInfoType),
-      }));
-      updateFollowerList(initialFollowerList as FollowInfoType[]);
     };
     func();
   }, []);
