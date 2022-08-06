@@ -7,6 +7,7 @@ import { ChatMessage } from '@/libs/message';
 import type { ChatFragment, ChatMessageType } from '@/types/types';
 
 import ChatList from '../components/chat/ChatList';
+import RecentFollowerList from '../components/followers/RecentFollowerList';
 
 // TODO: remove hardcoded channel name
 const currentChannel = 'c_rainbow';
@@ -59,9 +60,9 @@ function Home() {
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col">
           {/* Navbar */}
-          <div className="navbar bg-base-300 w-full">
+          <div className="navbar w-full bg-base-300">
             <div className="flex-none md:hidden">
-              <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
+              <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -106,6 +107,7 @@ function Home() {
             <a className="tab tab-lifted">Channel 7</a>
           </div>
           <div className="content flex">
+            {/* Left pane */}
             <div className="flex-1 p-1 ">
               <div className="w-full text-center text-2xl">
                 Enter the channel name
@@ -117,31 +119,21 @@ function Home() {
               </div>
               <ChatList chatList={chatList} />
             </div>
+            {/* Right pane */}
             <div className="flex-1 p-1">
-              <div className="hero bg-base-200 min-h-screen">
-                <div className="hero-content text-center">
-                  <div className="max-w-md">
-                    <h1 className="text-5xl font-bold">
-                      {/* {selectedChat?.displayName} */}
-                    </h1>
-                    <p className="pt-6 pb-2">
-                      {/* {selectedChat?.fragments.map((fragment) => (
-                        <SingleChatFragment fragment={fragment} />
-                      ))} */}
-                    </p>
-                    <p className="pt-2 pb-6">
-                      Translation: {/* {selectedChat?.translation?.text} */}
-                    </p>
-                    <button className="btn btn-primary">Learn more</button>
-                  </div>
+              <div className="grid grid-flow-row auto-rows-max">
+                <div className="">
+                  <RecentFollowerList />
                 </div>
+                <div className="">03</div>
               </div>
+              {/* Right pane, upper half */}
             </div>
           </div>
         </div>
         <div className="drawer-side">
           <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
-          <ul className="menu bg-base-100 w-80 overflow-y-auto p-4">
+          <ul className="menu w-80 overflow-y-auto bg-base-100 p-4">
             {/* Sidebar content here. Separate menu content for navbar */}
             <li>
               <a onClick={() => alert('test 1')}>Do something 1</a>

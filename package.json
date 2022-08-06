@@ -20,6 +20,8 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "daisyui": "^2.22.0",
+    "firebase": "^9.9.2",
     "next": "^12.2.2",
     "next-seo": "^5.4.0",
     "react": "^18.2.0",
