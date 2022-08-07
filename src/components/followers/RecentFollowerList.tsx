@@ -13,20 +13,17 @@ import { useEffect } from 'react';
 
 import { useFollowInfoStore } from '@/states/follows';
 import type { FollowInfoType } from '@/types/types';
+import { useSelectedFollowInfoStore } from '../../states/follows';
+import { getFullname } from '@/libs/username';
 
-
-function getFullname(username: string, displayName: string): string {
-  if (username.toLocaleLowerCase() === displayName.toLocaleLowerCase()) {
-    return displayName;
-  }
-  return `${displayName}(${username})`;
-}
 
 function RecentFollowerList() {
   const [followInfos, addFollows] = useFollowInfoStore((state) => [
     state.followInfos,
     state.addFollows,
   ]);
+
+  const [selectFollow] = useSelectedFollowInfoStore(state => [state.selectFollow]);
 
   useEffect(() => {
     const firebaseConfig = {
@@ -89,7 +86,7 @@ function RecentFollowerList() {
           <tbody>
             {followInfos.map((followInfo, index) => {
               return (
-                <tr key={followInfo.followerId}>
+                <tr key={followInfo.followerId} onClick={() => selectFollow(followInfo)}>
                   <th className="text-emerald-800">{index+1}</th>
                   <td className="font-medium">{getFullname(followInfo.followerLogin, followInfo.followerDisplayName)}</td>
                   <td>{new Date(followInfo.timestamp.seconds * 1000).toLocaleString()}</td>

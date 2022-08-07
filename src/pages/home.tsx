@@ -8,6 +8,7 @@ import type { ChatFragment, ChatMessageType } from '@/types/types';
 
 import ChatList from '../components/chat/ChatList';
 import RecentFollowerList from '../components/followers/RecentFollowerList';
+import TranslationInfo from '@/components/details/TranslationInfo';
 
 // TODO: remove hardcoded channel name
 const currentChannel = 'c_rainbow';
@@ -98,17 +99,13 @@ function Home() {
           <div className="tabs">
             <a className="tab tab-lifted">Channel 1</a>
             <a className="tab tab-lifted tab-active">
-              Channel Channel Channel 2
+              c_rainbow
             </a>
             <a className="tab tab-lifted">Channel 3</a>
-            <a className="tab tab-lifted">Channel 4</a>
-            <a className="tab tab-lifted">Channel 5</a>
-            <a className="tab tab-lifted">Channel 6</a>
-            <a className="tab tab-lifted">Channel 7</a>
           </div>
-          <div className="content flex">
+          <div className="content grid grid-cols-3 gap-4">
             {/* Left pane */}
-            <div className="flex-1 p-1 ">
+            <div className="left-pane">
               <div className="w-full text-center text-2xl">
                 Enter the channel name
               </div>
@@ -119,15 +116,13 @@ function Home() {
               </div>
               <ChatList chatList={chatList} />
             </div>
+            {/* Middle pane */}
+            <div className="middle-pane">
+              <RecentFollowerList />
+            </div>
             {/* Right pane */}
-            <div className="flex-1 p-1">
-              <div className="grid grid-flow-row auto-rows-max">
-                <div className="">
-                  <RecentFollowerList />
-                </div>
-                <div className="">03</div>
-              </div>
-              {/* Right pane, upper half */}
+            <div className="right-pane">
+              <TranslationInfo />
             </div>
           </div>
         </div>
