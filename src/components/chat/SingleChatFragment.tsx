@@ -5,5 +5,13 @@ interface PropType {
 }
 
 export default function SingleChatFragment({ fragment }: PropType) {
-  return <>{` ${fragment.text} `}</>;
+
+  switch(fragment.type) {
+    case 'emote':
+      return <img src={fragment.emote?.url}/>;
+    case 'link':
+      return <a href={fragment.text}>{fragment.text}</a>;
+    default:
+      return <>{` ${fragment.text} `}</>
+  }
 }
