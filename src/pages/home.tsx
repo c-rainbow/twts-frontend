@@ -9,6 +9,7 @@ import type { ChatFragment, ChatMessageType } from '@/types/types';
 import ChatList from '../components/chat/ChatList';
 import RecentFollowerList from '../components/followers/RecentFollowerList';
 import TranslationInfo from '@/components/details/TranslationInfo';
+import ChatTranslationInfo from '@/components/details/ChatTranslationInfo';
 
 // TODO: remove hardcoded channel name
 const currentChannel = 'c_rainbow';
@@ -123,6 +124,8 @@ function Home() {
             {/* Right pane */}
             <div className="right-pane">
               <TranslationInfo />
+              <div className="divider">divide</div>
+              <ChatTranslationInfo />
             </div>
           </div>
         </div>
