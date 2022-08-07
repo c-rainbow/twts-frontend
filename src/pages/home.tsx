@@ -54,7 +54,7 @@ function Home() {
   return (
     <>
       <Head>
-        <title>HyperChat</title>
+        <title>Test page</title>
       </Head>
       <div className="drawer">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />

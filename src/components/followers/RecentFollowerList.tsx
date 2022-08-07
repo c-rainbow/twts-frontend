@@ -14,6 +14,14 @@ import { useEffect } from 'react';
 import { useFollowInfoStore } from '@/states/follows';
 import type { FollowInfoType } from '@/types/types';
 
+
+function getFullname(username: string, displayName: string): string {
+  if (username.toLocaleLowerCase() === displayName.toLocaleLowerCase()) {
+    return displayName;
+  }
+  return `${displayName}(${username})`;
+}
+
 function RecentFollowerList() {
   const [followInfos, addFollows] = useFollowInfoStore((state) => [
     state.followInfos,
@@ -67,17 +75,29 @@ function RecentFollowerList() {
 
   return (
     <>
-      <div>
-        {followInfos.map((followInfo) => {
-          return (
-            <div key={followInfo.followerId}>
-              <>
-                {followInfo.followerDisplayName},{' '}
-                {new Date(followInfo.timestamp.seconds * 1000).toISOString()}
-              </>
-            </div>
-          );
-        })}
+      <h1 className="text-2xl">Recent Followers</h1>
+      <div className="overflow-x-auto">
+        <table className="table w-full">
+          {/* head */}
+          <thead>
+            <tr>
+              <th></th>
+              <th>Username</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {followInfos.map((followInfo, index) => {
+              return (
+                <tr key={followInfo.followerId}>
+                  <th className="text-emerald-800">{index+1}</th>
+                  <td className="font-medium">{getFullname(followInfo.followerLogin, followInfo.followerDisplayName)}</td>
+                  <td>{new Date(followInfo.timestamp.seconds * 1000).toLocaleString()}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </>
   );
