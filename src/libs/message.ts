@@ -1,8 +1,6 @@
 import type { ChatUserstate } from 'tmi.js';
 
-import type {
-  ChatMessageType,
-} from '@/types/types';
+import type { ChatMessageType } from '@/types/types';
 import { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 
 export class ChatMessage implements ChatMessageType {
@@ -57,10 +55,8 @@ export class ChatMessage implements ChatMessageType {
   }
 
   get textMessage() {
-    const textFragments = this.tokens.map((fragment) =>
-      fragment.text.trim()
-    );
-    return textFragments.join(' ');
+    const textTokens = this.tokens.map((token) => token.text.trim());
+    return textTokens.join(' ');
   }
 
   get isEmoteOnly() {

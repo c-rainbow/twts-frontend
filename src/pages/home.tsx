@@ -10,7 +10,7 @@ import ChatList from '../components/chat/ChatList';
 import RecentFollowerList from '../components/followers/RecentFollowerList';
 import TranslationInfo from '@/components/details/TranslationInfo';
 import ChatTranslationInfo from '@/components/details/ChatTranslationInfo';
-import { ChatToken, ChatTokenizer } from '@twtts/shared';
+import tokenizer from '@/libs/tokenizer';
 
 // TODO: remove hardcoded channel name
 const currentChannel = 'c_rainbow';
@@ -36,14 +36,11 @@ function Home() {
           console.log('message:', message);
           console.log('self:', self);
 
-          const fragments: ChatToken[] = [];
+          const channelId = userstate['room-id']!;
+          const tokens = await tokenizer.tokenize(channelId, message, userstate.emotes || {});
+          const chatMessage = new ChatMessage(channel, userstate, message, tokens);
 
-          ChatTokenizer
-
-          let newList = [
-            ...chatListRef.current,
-            new ChatMessage(channel, userstate, message, fragments),
-          ];
+          let newList = [...chatListRef.current, chatMessage];
 
           // Keeps only the last 30 chats
           if (newList.length > 30) {

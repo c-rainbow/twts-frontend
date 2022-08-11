@@ -1,11 +1,12 @@
 import { ChatToken } from "@twtts/shared";
 
 interface PropType {
-  fragment: ChatToken;
+  token: ChatToken;
 }
 
-export default function SingleChatToken({ fragment: token }: PropType) {
+export default function SingleChatToken({ token }: PropType) {
 
+  // Render chat token
   switch(token.type) {
     case 'mention':
       return (

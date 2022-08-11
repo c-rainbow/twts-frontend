@@ -2,15 +2,13 @@
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useSelectedChatStore } from "@/states/chats";
-import SingleChatToken from "../chat/SingleChatFragment";
+import SingleChatToken from "../chat/SingleChatToken";
 import { ChatToken, TranslateChatResponse } from "@twtts/shared";
 
 
 function ChatTranslationInfo() {
   const [selectedChat] = useSelectedChatStore(state => [state.chat]);
   const [translation, setTranslation] = useState<ChatToken[]>([]);
-  //const [pinyin, setPinyin] = useState<string>();
-  //const [romaji, setRomaji] = useState<string>();
 
   useEffect(() => {
     if (!selectedChat) {
@@ -50,7 +48,7 @@ function ChatTranslationInfo() {
                 <td className="font-medium bg-base-200">Translation</td>
                 <td className='bg-base-200 text-left'>
                   {translation.map(
-                    fragment => <SingleChatToken fragment={fragment} />
+                    token => <SingleChatToken token={token} />
                   )}
                 </td>
               </tr>
