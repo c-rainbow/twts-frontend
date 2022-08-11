@@ -11,6 +11,7 @@ export interface ChatMessageType {
 
   // Wrapper for userstate properties
   uuid: string;
+  userId: string;
   username: string;
   displayName: string;
   channelId: string;

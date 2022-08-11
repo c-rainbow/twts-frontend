@@ -2,6 +2,8 @@ import type { ChatMessageType } from '@/types/types';
 import { ChatToken } from '@twtts/shared';
 import { useSelectedChatStore } from '../../states/chats';
 import SingleChatToken from './SingleChatToken';
+import userColorCache from '../../libs/usercolor';
+
 
 type SingleChatPropType = {
   chat: ChatMessageType;
@@ -14,7 +16,7 @@ export default function SingleChat({ chat }: SingleChatPropType) {
     <div className="mt-1 ">
       <span
         className="mr-1 font-bold"
-        style={{ color: chat.color ?? '#b22222' }}
+        style={{ color: chat.color || userColorCache.getColor(chat.userId) }}
       >
         {chat.fullName}
       </span>

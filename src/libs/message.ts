@@ -3,6 +3,7 @@ import type { ChatUserstate } from 'tmi.js';
 import type { ChatMessageType } from '@/types/types';
 import { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 import tokenizer from '@/libs/tokenizer';
+import { getFullname } from './username';
 
 
 export async function makeChatMessage(
@@ -10,17 +11,17 @@ export async function makeChatMessage(
   userstate: ChatUserstate,
   message: string
 ): Promise<ChatMessageType> {
-  const channelId = userstate['room-id']!;
+  const channelId = userstate['room-id']!;  // This tag always exists.
   const tokens = await tokenizer.tokenize(channelId, message, userstate.emotes || {});
   return new ChatMessage(channel, userstate, message, tokens);
 }
 
 
 class ChatMessage implements ChatMessageType {
-  channel: string;
-  userstate: ChatUserstate;
-  message: string;
-  tokens: ChatToken[];
+  readonly channel: string;
+  readonly userstate: ChatUserstate;
+  readonly message: string;
+  readonly tokens: ChatToken[];
 
   constructor(
     channel: string,
@@ -31,13 +32,15 @@ class ChatMessage implements ChatMessageType {
     this.channel = channel;
     this.userstate = userstate;
     this.message = message;
-
-    tokenizer.tokenize(this.channelId, message, this.emotes)
     this.tokens = tokens;
   }
 
   get uuid() {
     return this.userstate.id!;
+  }
+
+  get userId() {
+    return this.userstate['user-id']!;
   }
 
   get username() {
@@ -53,12 +56,7 @@ class ChatMessage implements ChatMessageType {
   }
 
   get fullName() {
-    const usernameUpper = this.username.toLocaleUpperCase();
-    const displayNameUpper = this.displayName.toLocaleUpperCase();
-    if (usernameUpper === displayNameUpper) {
-      return this.displayName;
-    }
-    return `${this.displayName}(${this.username})`;
+    return getFullname(this.username, this.displayName);
   }
 
   get channelId() {
@@ -70,11 +68,13 @@ class ChatMessage implements ChatMessageType {
   }
 
   get textMessage() {
-    const textTokens = this.tokens.map((token) => token.text.trim());
+    const textTokens = this.tokens
+      .filter(token => token.type === 'text')
+      .map((token) => token.text.trim());
     return textTokens.join(' ');
   }
 
   get isEmoteOnly() {
-    return this.emotes === {};
+    return this.tokens.filter(token => token.type !== 'emote') === [];
   }
 }
