@@ -1,17 +1,31 @@
-import type { ChatFragment } from '@/types/types';
+import { ChatToken } from "@twtts/shared";
 
 interface PropType {
-  fragment: ChatFragment;
+  fragment: ChatToken;
 }
 
-export default function SingleChatFragment({ fragment }: PropType) {
+export default function SingleChatToken({ fragment: token }: PropType) {
 
-  switch(fragment.type) {
+  switch(token.type) {
+    case 'mention':
+      return (
+        <>
+          <span className="font-medium">{token.text}</span>{' '}
+        </>
+      );
     case 'emote':
-      return <img src={fragment.emote?.url}/>;
+      return (
+        <>
+          <img src={token.emote?.url}/>{' '}
+        </>
+      );
     case 'link':
-      return <a href={fragment.text}>{fragment.text}</a>;
+      return (
+        <>
+          <a href={token.text}>{token.text}</a>{' '}
+        </>
+      );
     default:
-      return <>{` ${fragment.text} `}</>
+      return <>{`${token.text} `}</>
   }
 }

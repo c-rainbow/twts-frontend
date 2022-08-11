@@ -1,23 +1,14 @@
-import { getFullname } from "@/libs/username";
-import { useSelectedFollowInfoStore } from "@/states/follows";
+
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useSelectedChatStore } from "@/states/chats";
-import { ChatFragment } from '../../types/types';
-import SingleChatFragment from "../chat/SingleChatFragment";
+import SingleChatToken from "../chat/SingleChatFragment";
+import { ChatToken, TranslateChatResponse } from "@twtts/shared";
 
-
-interface ChatTranslationOutput {
-	original: ChatFragment[];  // Fragments of the original chat message.
-  translated: ChatFragment[];  // Translated chat message. Undefined if not translated
-  srcLang: string;  // Source language
-  destLang: string;  // Target language
-	//displayName?: NameTranslationOutput;  // Translated display name, if translated
-}
 
 function ChatTranslationInfo() {
   const [selectedChat] = useSelectedChatStore(state => [state.chat]);
-  const [translation, setTranslation] = useState<ChatFragment[]>([]);
+  const [translation, setTranslation] = useState<ChatToken[]>([]);
   //const [pinyin, setPinyin] = useState<string>();
   //const [romaji, setRomaji] = useState<string>();
 
@@ -26,13 +17,13 @@ function ChatTranslationInfo() {
       return;
     }
     const func = async () => {
-      const response = await axios.post<ChatTranslationOutput>('http://localhost:3001/chats/translate/test', {
+      const response = await axios.post<TranslateChatResponse>('http://localhost:3001/chats/translate/test', {
         channelId: selectedChat.channelId,
         message: selectedChat.message,
         emotes: selectedChat.emotes
       });
       // response.data
-      setTranslation(response.data.translated);
+      setTranslation(response.data.translated || response.data.original);
       //setPinyin(response.data.pronunciation.pinyin);
       //setRomaji(response.data.pronunciation.romaji || '');
 
@@ -59,7 +50,7 @@ function ChatTranslationInfo() {
                 <td className="font-medium bg-base-200">Translation</td>
                 <td className='bg-base-200 text-left'>
                   {translation.map(
-                    fragment => <SingleChatFragment fragment={fragment} />
+                    fragment => <SingleChatToken fragment={fragment} />
                   )}
                 </td>
               </tr>

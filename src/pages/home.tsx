@@ -4,12 +4,13 @@ import type { ChatUserstate } from 'tmi.js';
 import { Client } from 'tmi.js';
 
 import { ChatMessage } from '@/libs/message';
-import type { ChatFragment, ChatMessageType } from '@/types/types';
+import type { ChatMessageType } from '@/types/types';
 
 import ChatList from '../components/chat/ChatList';
 import RecentFollowerList from '../components/followers/RecentFollowerList';
 import TranslationInfo from '@/components/details/TranslationInfo';
 import ChatTranslationInfo from '@/components/details/ChatTranslationInfo';
+import { ChatToken, ChatTokenizer } from '@twtts/shared';
 
 // TODO: remove hardcoded channel name
 const currentChannel = 'c_rainbow';
@@ -35,7 +36,9 @@ function Home() {
           console.log('message:', message);
           console.log('self:', self);
 
-          const fragments: ChatFragment[] = [];
+          const fragments: ChatToken[] = [];
+
+          ChatTokenizer
 
           let newList = [
             ...chatListRef.current,

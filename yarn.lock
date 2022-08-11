@@ -1510,6 +1510,14 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.3.tgz#472eaab5f15c1ffdd7f8628bd4c4f753995ec79e"
   integrity sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==
 
+"@twtts/shared@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@twtts/shared/-/shared-1.0.4.tgz#becd510205f74e84feb772c64f0ec62127231fa4"
+  integrity sha512-O2xZDZRFsBct9tV4ehiCvsg1omTVTi+aVuiy5lFDi1CCiQ5jT9bZLI+X62aZhyC7Gg3pvMbxaHbKEQVEiRXVug==
+  dependencies:
+    axios "^0.27.2"
+    typescript "^4.7.4"
+
 "@types/aria-query@^4.2.0":
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/@types/aria-query/-/aria-query-4.2.2.tgz#ed4e0ad92306a704f9fb132a0cfcf77486dbe2bc"

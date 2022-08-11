@@ -1,30 +1,26 @@
 import type { ChatUserstate } from 'tmi.js';
 
 import type {
-  ChatFragment,
   ChatMessageType,
-  TwitchEmoteTags,
 } from '@/types/types';
+import { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 
 export class ChatMessage implements ChatMessageType {
   channel: string;
-
   userstate: ChatUserstate;
-
   message: string;
-
-  fragments: ChatFragment[];
+  tokens: ChatToken[];
 
   constructor(
     channel: string,
     userstate: ChatUserstate,
     message: string,
-    fragments: ChatFragment[]
+    tokens: ChatToken[]
   ) {
     this.channel = channel;
     this.userstate = userstate;
     this.message = message;
-    this.fragments = fragments;
+    this.tokens = tokens;
   }
 
   get uuid() {
@@ -61,7 +57,7 @@ export class ChatMessage implements ChatMessageType {
   }
 
   get textMessage() {
-    const textFragments = this.fragments.map((fragment) =>
+    const textFragments = this.tokens.map((fragment) =>
       fragment.text.trim()
     );
     return textFragments.join(' ');
