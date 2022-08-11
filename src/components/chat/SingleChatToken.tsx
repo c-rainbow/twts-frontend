@@ -4,29 +4,23 @@ interface PropType {
   token: ChatToken;
 }
 
-export default function SingleChatToken({ token }: PropType) {
 
-  // Render chat token
+function renderToken(token: ChatToken) {
   switch(token.type) {
     case 'mention':
-      return (
-        <>
-          <span className="font-medium">{token.text}</span>{' '}
-        </>
-      );
+      return <span className="font-semibold inline">{token.text}</span>;
     case 'emote':
-      return (
-        <>
-          <img src={token.emote?.url}/>{' '}
-        </>
-      );
+      return <img className="inline" src={token.emote?.url}/>;
     case 'link':
-      return (
-        <>
-          <a href={token.text}>{token.text}</a>{' '}
-        </>
-      );
+      return <a href={token.text} target="_blank">{token.text}</a>;
     default:
-      return <>{`${token.text} `}</>
+      return <>{token.text}</>;
   }
+}
+
+/**
+ * Render a single chat token
+ */
+export default function SingleChatToken({ token }: PropType) {
+  return <>{renderToken(token)}{' '}</>;
 }

@@ -3,14 +3,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { ChatUserstate } from 'tmi.js';
 import { Client } from 'tmi.js';
 
-import { ChatMessage } from '@/libs/message';
+import { makeChatMessage } from '@/libs/message';
 import type { ChatMessageType } from '@/types/types';
 
 import ChatList from '../components/chat/ChatList';
 import RecentFollowerList from '../components/followers/RecentFollowerList';
 import TranslationInfo from '@/components/details/TranslationInfo';
 import ChatTranslationInfo from '@/components/details/ChatTranslationInfo';
-import tokenizer from '@/libs/tokenizer';
+
 
 // TODO: remove hardcoded channel name
 const currentChannel = 'c_rainbow';
@@ -28,18 +28,8 @@ function Home() {
       client.connect();
       console.log('connected to client');
 
-      client.on(
-        'message',
-        async (channel, userstate: ChatUserstate, message, self) => {
-          console.log('channel:', channel);
-          console.log('userstate:', userstate);
-          console.log('message:', message);
-          console.log('self:', self);
-
-          const channelId = userstate['room-id']!;
-          const tokens = await tokenizer.tokenize(channelId, message, userstate.emotes || {});
-          const chatMessage = new ChatMessage(channel, userstate, message, tokens);
-
+      client.on('message', async (channel, userstate, message) => {
+          const chatMessage = await makeChatMessage(channel, userstate, message);
           let newList = [...chatListRef.current, chatMessage];
 
           // Keeps only the last 30 chats

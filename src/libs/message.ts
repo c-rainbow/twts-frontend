@@ -2,8 +2,21 @@ import type { ChatUserstate } from 'tmi.js';
 
 import type { ChatMessageType } from '@/types/types';
 import { ChatToken, TwitchEmoteTags } from '@twtts/shared';
+import tokenizer from '@/libs/tokenizer';
 
-export class ChatMessage implements ChatMessageType {
+
+export async function makeChatMessage(
+  channel: string,
+  userstate: ChatUserstate,
+  message: string
+): Promise<ChatMessageType> {
+  const channelId = userstate['room-id']!;
+  const tokens = await tokenizer.tokenize(channelId, message, userstate.emotes || {});
+  return new ChatMessage(channel, userstate, message, tokens);
+}
+
+
+class ChatMessage implements ChatMessageType {
   channel: string;
   userstate: ChatUserstate;
   message: string;
@@ -18,6 +31,8 @@ export class ChatMessage implements ChatMessageType {
     this.channel = channel;
     this.userstate = userstate;
     this.message = message;
+
+    tokenizer.tokenize(this.channelId, message, this.emotes)
     this.tokens = tokens;
   }
 
