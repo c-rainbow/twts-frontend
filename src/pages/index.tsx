@@ -2,9 +2,17 @@ import { useRouter } from 'next/router';
 
 import { Meta } from '@/layouts/Meta';
 import { Main } from '@/templates/Main';
+import { useEffect } from 'react';
 
 const Index = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    if (!process.env.NEXT_PUBLIC_DEFAULT_CHANNEL) {
+      return;
+    }
+    router.push(`http://localhost:3000/${process.env.NEXT_PUBLIC_DEFAULT_CHANNEL}`);
+  }, []);
 
   return (
     <Main

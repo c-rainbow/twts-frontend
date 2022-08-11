@@ -1,29 +1,36 @@
 import Head from 'next/head';
 import React, { useEffect, useRef, useState } from 'react';
-import type { ChatUserstate } from 'tmi.js';
 import { Client } from 'tmi.js';
 
 import { makeChatMessage } from '@/libs/message';
 import type { ChatMessageType } from '@/types/types';
 
-import ChatList from '../components/chat/ChatList';
-import RecentFollowerList from '../components/followers/RecentFollowerList';
+
 import TranslationInfo from '@/components/details/TranslationInfo';
 import ChatTranslationInfo from '@/components/details/ChatTranslationInfo';
-
+import ChatList from '@/components/chat/ChatList';
+import RecentFollowerList from '@/components/followers/RecentFollowerList';
+import { useRouter } from 'next/router';
 
 // TODO: remove hardcoded channel name
-const currentChannel = 'c_rainbow';
 let client: Client | null = null;
 
 function Home() {
+  const router = useRouter()
+  const { channelName } = router.query;
+  const channel = Array.isArray(channelName) ? channelName[0] : channelName;
+
   const [chatList, setChatList] = useState<ChatMessageType[]>([]);
   const chatListRef = useRef(chatList);
 
   useEffect(() => {
+    if (!channel) {
+      return;
+    }
+
     if (!client) {
       client = new Client({
-        channels: [currentChannel],
+        channels: [channel],
       });
       client.connect();
       console.log('connected to client');
@@ -41,7 +48,7 @@ function Home() {
         }
       );
     }
-  }, []);
+  }, [channel]);
 
   return (
     <>
@@ -101,8 +108,8 @@ function Home() {
                 Enter the channel name
               </div>
               <div className="divider my-2">
-                {currentChannel
-                  ? `Current in channel ${currentChannel}`
+                {channel
+                  ? `Current in channel ${channel}`
                   : 'Chat not activated'}
               </div>
               <ChatList chatList={chatList} />
