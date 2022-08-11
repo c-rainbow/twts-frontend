@@ -1,19 +1,9 @@
 import { getFullname } from "@/libs/username";
 import { useSelectedFollowInfoStore } from "@/states/follows";
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import { TranslateNameRequest, TranslateNameResponse } from '@twtts/shared';
+import apiclient from '../../libs/apiclient';
 
-
-interface TranslationResponse {
-  translated: string;
-  srcLang: string;
-  destLang: string,
-  pronunciation: {
-    text: string,
-    pinyin: string,
-    romaji: string,
-  }
-}
 
 
 function TranslationInfo() {
@@ -26,15 +16,19 @@ function TranslationInfo() {
     if (!followInfo) {
       return;
     }
-    const func = async () => {
-      const response = await axios.post<TranslationResponse>('http://localhost:3001/translate', {
-        displayName: followInfo.followerDisplayName
-      });
-      // response.data
-      setTranslation(response.data.translated);
-      setPinyin(response.data.pronunciation.pinyin);
-      setRomaji(response.data.pronunciation.romaji || '');
 
+    const request: TranslateNameRequest = {
+      displayName: followInfo.followerDisplayName,
+      configs: {
+        defaultTargetLang: 'en',
+      }
+    }
+
+    const func = async () => {
+      const response = await apiclient.post<TranslateNameResponse>('/api/translate/name', request);
+      setTranslation(response.data.translated || response.data.original);
+      setPinyin(response.data.pronunciation?.pinyin);
+      setRomaji(response.data.pronunciation?.romaji);
     };
     func();
   }, [followInfo]);

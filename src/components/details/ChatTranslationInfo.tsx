@@ -1,9 +1,9 @@
 
 import { useEffect, useState } from "react";
-import axios from 'axios';
 import { useSelectedChatStore } from "@/states/chats";
 import SingleChatToken from "../chat/SingleChatToken";
-import { ChatToken, TranslateChatResponse } from "@twtts/shared";
+import { ChatToken, TranslateChatResponse, TranslateChatRequest } from '@twtts/shared';
+import apiclient from '../../libs/apiclient';
 
 
 function ChatTranslationInfo() {
@@ -14,17 +14,18 @@ function ChatTranslationInfo() {
     if (!selectedChat) {
       return;
     }
-    const func = async () => {
-      const response = await axios.post<TranslateChatResponse>('http://localhost:3001/chats/translate/test', {
-        channelId: selectedChat.channelId,
-        message: selectedChat.message,
-        emotes: selectedChat.emotes
-      });
-      // response.data
-      setTranslation(response.data.translated || response.data.original);
-      //setPinyin(response.data.pronunciation.pinyin);
-      //setRomaji(response.data.pronunciation.romaji || '');
 
+    const request: TranslateChatRequest = {
+      tokens: selectedChat.tokens,
+      displayName: selectedChat.displayName,
+      configs: {
+        defaultTargetLang: 'en',
+      }
+    }
+
+    const func = async () => {
+      const response = await apiclient.post<TranslateChatResponse>('/api/translate/chat', request);
+      setTranslation(response.data.translated || response.data.original);
     };
     func();
   }, [selectedChat]);
