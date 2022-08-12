@@ -1,27 +1,28 @@
 import Head from 'next/head';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Client } from 'tmi.js';
 
 import { makeChatMessage } from '@/libs/message';
-import type { ChatMessageType } from '@/types/types';
-
 
 import TranslationInfo from '@/components/details/TranslationInfo';
 import ChatTranslationInfo from '@/components/details/ChatTranslationInfo';
 import ChatList from '@/components/chat/ChatList';
 import RecentFollowerList from '@/components/followers/RecentFollowerList';
 import { useRouter } from 'next/router';
+import { useChatListStore } from '@/states/chats';
 
 // TODO: remove hardcoded channel name
 let client: Client | null = null;
 
 function Home() {
-  const router = useRouter()
+  const router = useRouter();
   const { channelName } = router.query;
   const channel = Array.isArray(channelName) ? channelName[0] : channelName;
 
-  const [chatList, setChatList] = useState<ChatMessageType[]>([]);
-  const chatListRef = useRef(chatList);
+  const [chatList, addChat] = useChatListStore((state) => [
+    state.chats,
+    state.addChat,
+  ]);
 
   useEffect(() => {
     if (!channel) {
@@ -36,24 +37,16 @@ function Home() {
       console.log('connected to client');
 
       client.on('message', async (channel, userstate, message) => {
-          const chatMessage = await makeChatMessage(channel, userstate, message);
-          let newList = [...chatListRef.current, chatMessage];
-
-          // Keeps only the last 30 chats
-          if (newList.length > 30) {
-            newList = newList.slice(-30);
-          }
-          setChatList(newList);
-          chatListRef.current = newList;
-        }
-      );
+        const chatMessage = await makeChatMessage(channel, userstate, message);
+        addChat(chatMessage);
+      });
     }
   }, [channel]);
 
   return (
     <>
       <Head>
-        <title>Test page</title>
+        <title>HyperChat</title>
       </Head>
       <div className="drawer">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -84,44 +77,25 @@ function Home() {
                 <li>
                   <a onClick={() => alert('config')}>Config</a>
                 </li>
-                <li>
-                  <a onClick={() => {}}>Login</a>
-                </li>
-                <li>
-                  <a onClick={() => {}}>Logout</a>
-                </li>
               </ul>
             </div>
           </div>
           {/* Page content here */}
-          <div className="tabs">
-            <a className="tab tab-lifted">Channel 1</a>
-            <a className="tab tab-lifted tab-active">
-              c_rainbow
-            </a>
-            <a className="tab tab-lifted">Channel 3</a>
-          </div>
-          <div className="content grid grid-cols-3 gap-4">
+          <div className="content grid grid-cols-3 gap-3 min-w-[1075px]">
             {/* Left pane */}
-            <div className="left-pane">
-              <div className="w-full text-center text-2xl">
-                Enter the channel name
-              </div>
-              <div className="divider my-2">
-                {channel
-                  ? `Current in channel ${channel}`
-                  : 'Chat not activated'}
-              </div>
+            <div className="left-pane min-w-[350px]">
+              <h1 className="text-2xl py-3 text-center">Chats</h1>
               <ChatList chatList={chatList} />
             </div>
             {/* Middle pane */}
-            <div className="middle-pane">
+            <div className="middle-pane min-w-[350px]">
+              <h1 className="text-2xl py-3 text-center">Recent Followers</h1>
               <RecentFollowerList />
             </div>
             {/* Right pane */}
-            <div className="right-pane">
+            <div className="right-pane min-w-[350px]">
+              <h1 className="text-2xl py-3 text-center">Translation</h1>
               <TranslationInfo />
-              <div className="divider">divide</div>
               <ChatTranslationInfo />
             </div>
           </div>

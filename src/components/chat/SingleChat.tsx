@@ -4,13 +4,12 @@ import { useSelectedChatStore } from '../../states/chats';
 import SingleChatToken from './SingleChatToken';
 import userColorCache from '../../libs/usercolor';
 
-
 type SingleChatPropType = {
   chat: ChatMessageType;
 };
 
 export default function SingleChat({ chat }: SingleChatPropType) {
-  const [selectChat] = useSelectedChatStore(state => [state.selectChat])
+  const [selectChat] = useSelectedChatStore((state) => [state.selectChat]);
 
   return (
     <div className="mt-1 ">

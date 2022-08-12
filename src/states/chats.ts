@@ -12,9 +12,14 @@ export const useChatListStore = create<ChatListState>((set, get) => ({
   chats: [],
   maxSize: 200,
   addChat: (chat: ChatMessageType) => {
-    const { chats } = get();
+    const { chats, maxSize } = get();
     chats.push(chat);
-    set({ chats });
+
+    if (chats.length > maxSize) {
+      set({ chats: chats.slice(-maxSize) });
+    } else {
+      set({ chats });
+    }
   },
 }));
 

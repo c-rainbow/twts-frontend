@@ -54,6 +54,8 @@ export interface SelectedFollowInfoState {
   selectFollow: (followInfo: FollowInfoType) => void;
 }
 
-export const useSelectedFollowInfoStore = create<SelectedFollowInfoState>((set) => ({
-  selectFollow: (followInfo: FollowInfoType) => set({ followInfo }),
-}));
+export const useSelectedFollowInfoStore = create<SelectedFollowInfoState>(
+  (set) => ({
+    selectFollow: (followInfo: FollowInfoType) => set({ followInfo }),
+  })
+);

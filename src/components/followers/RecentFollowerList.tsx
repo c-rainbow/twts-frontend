@@ -14,8 +14,7 @@ import { useEffect } from 'react';
 import { useFollowInfoStore } from '@/states/follows';
 import type { FollowInfoType } from '@/types/types';
 import { useSelectedFollowInfoStore } from '../../states/follows';
-import { getFullname } from '@/libs/username';
-
+import FollowInfo from './FollowInfo';
 
 function RecentFollowerList() {
   const [followInfos, addFollows] = useFollowInfoStore((state) => [
@@ -23,7 +22,9 @@ function RecentFollowerList() {
     state.addFollows,
   ]);
 
-  const [selectFollow] = useSelectedFollowInfoStore(state => [state.selectFollow]);
+  const [selectFollow] = useSelectedFollowInfoStore((state) => [
+    state.selectFollow,
+  ]);
 
   useEffect(() => {
     const firebaseConfig = {
@@ -71,32 +72,16 @@ function RecentFollowerList() {
   }, []);
 
   return (
-    <>
-      <h1 className="text-2xl">Recent Followers</h1>
-      <div className="overflow-x-auto">
-        <table className="table w-full">
-          {/* head */}
-          <thead>
-            <tr>
-              <th></th>
-              <th>Username</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {followInfos.map((followInfo, index) => {
-              return (
-                <tr key={followInfo.followerId} onClick={() => selectFollow(followInfo)}>
-                  <th className="text-emerald-800">{index+1}</th>
-                  <td className="font-medium">{getFullname(followInfo.followerLogin, followInfo.followerDisplayName)}</td>
-                  <td>{new Date(followInfo.timestamp.seconds * 1000).toLocaleString()}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </>
+    <div className="overflow-y-auto max-h-[600px]">
+      {followInfos.map((followInfo, index) => (
+        <FollowInfo
+          key={followInfo.followerId}
+          followInfo={followInfo}
+          index={index}
+          selectFollow={selectFollow}
+        />
+      ))}
+    </div>
   );
 }
 

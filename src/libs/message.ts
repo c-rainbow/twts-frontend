@@ -5,17 +5,19 @@ import { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 import tokenizer from '@/libs/tokenizer';
 import { getFullname } from './username';
 
-
 export async function makeChatMessage(
   channel: string,
   userstate: ChatUserstate,
   message: string
 ): Promise<ChatMessageType> {
-  const channelId = userstate['room-id']!;  // This tag always exists.
-  const tokens = await tokenizer.tokenize(channelId, message, userstate.emotes || {});
+  const channelId = userstate['room-id']!; // This tag always exists.
+  const tokens = await tokenizer.tokenize(
+    channelId,
+    message,
+    userstate.emotes || {}
+  );
   return new ChatMessage(channel, userstate, message, tokens);
 }
-
 
 class ChatMessage implements ChatMessageType {
   readonly channel: string;
@@ -69,12 +71,12 @@ class ChatMessage implements ChatMessageType {
 
   get textMessage() {
     const textTokens = this.tokens
-      .filter(token => token.type === 'text')
+      .filter((token) => token.type === 'text')
       .map((token) => token.text.trim());
     return textTokens.join(' ');
   }
 
   get isEmoteOnly() {
-    return this.tokens.filter(token => token.type !== 'emote') === [];
+    return this.tokens.filter((token) => token.type !== 'emote') === [];
   }
 }

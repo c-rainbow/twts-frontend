@@ -1,6 +1,5 @@
 import LruCache from 'lru-cache';
 
-
 // List of default colors available for usernames.
 const AVAILABLE_COLORS = [
   '#FF0000',
@@ -20,19 +19,17 @@ const AVAILABLE_COLORS = [
   '#00FF7F',
 ];
 
-
 function getNewUserColor(): string {
   const index = Math.floor(Math.random() * AVAILABLE_COLORS.length);
   return AVAILABLE_COLORS[index]!;
 }
-
 
 export class UserColorCache {
   private _lruCache: LruCache<string, string>;
 
   constructor() {
     this._lruCache = new LruCache<string, string>({
-      max: 5000,  // The value is color code. No need to limit the size to a small number
+      max: 5000, // The value is color code. No need to limit the size to a small number
     });
   }
 
@@ -47,6 +44,5 @@ export class UserColorCache {
     return userColor;
   }
 }
-
 
 export default new UserColorCache();
