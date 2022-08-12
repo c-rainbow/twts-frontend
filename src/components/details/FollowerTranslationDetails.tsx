@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { TranslateNameRequest, TranslateNameResponse } from '@twtts/shared';
 import apiclient from '../../libs/apiclient';
 import { FollowInfoType } from '@/types/types';
+import ISO6391 from 'iso-639-1';
 
 interface PropType {
   followInfo: FollowInfoType;
@@ -10,6 +11,7 @@ interface PropType {
 
 function FollowerTranslationDetails({ followInfo }: PropType) {
   const [translation, setTranslation] = useState<string>();
+  const [srcLang, setSrcLang] = useState<string>();
   const [pinyin, setPinyin] = useState<string>();
   const [romaji, setRomaji] = useState<string>();
 
@@ -30,9 +32,27 @@ function FollowerTranslationDetails({ followInfo }: PropType) {
         '/api/translate/name',
         request
       );
-      setTranslation(response.data.translated || response.data.original);
-      setPinyin(response.data.pronunciation?.pinyin);
-      setRomaji(response.data.pronunciation?.romaji);
+
+      const result = response.data;
+      setTranslation(result.translated || result.original);
+      setSrcLang(ISO6391.getName(result.srcLang.slice(0, 2)));
+
+      // TODO: Handle this in backend
+      if (result.srcLang.startsWith('zh')) {
+        setPinyin(result.pronunciation?.pinyin);
+      }
+      else {
+        setPinyin(undefined);
+      }
+      
+      // TODO: Handle this in backend
+      if (result.srcLang === 'ja') {
+        setRomaji(result.pronunciation?.romaji);
+      }
+      else {
+        setRomaji(undefined);
+      }
+      
     };
     func();
   }, [followInfo]);
@@ -46,18 +66,29 @@ function FollowerTranslationDetails({ followInfo }: PropType) {
       <div className="text-xl font-medium py-3 text-center">
         {getFullname(followInfo.followerLogin, followInfo.followerDisplayName)}
       </div>
+      {srcLang && (
+        <div className="py-2">
+          <span className="font-medium pl-3 pr-4">Language</span>
+          <span className="text-left">{srcLang}</span>
+        </div>
+      )}
       <div className="py-2">
         <span className="font-medium pl-3 pr-4">Translation</span>
         <span className="text-left">{translation}</span>
       </div>
-      <div className="py-2">
-        <span className="font-medium pl-3 pr-4">Pinyin</span>
-        <span className="text-left">{pinyin}</span>
-      </div>
-      <div className="py-2">
-        <span className="font-medium pl-3 pr-4">Romaji</span>
-        <span className="text-left">{romaji}</span>
-      </div>
+      {pinyin && (
+        <div className="py-2">
+          <span className="font-medium pl-3 pr-4">Pinyin</span>
+          <span className="text-left">{pinyin}</span>
+        </div>
+      )}
+      {romaji && (
+        <div className="py-2">
+          <span className="font-medium pl-3 pr-4">Romaji</span>
+          <span className="text-left">{romaji}</span>
+        </div>
+      )}
+      
     </div>
   );
 }

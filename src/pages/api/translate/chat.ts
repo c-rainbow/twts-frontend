@@ -28,6 +28,5 @@ export default async function handler(
     return;
   }
 
-  console.log('response:', response.data);
   res.send(response.data);
 }
