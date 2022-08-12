@@ -8,21 +8,71 @@ import {
 import apiclient from '../../libs/apiclient';
 import { ChatMessageType } from '../../types/types';
 import ISO6391 from 'iso-639-1';
+import { TranslateNameResponse } from '@twtts/shared';
+import SingleChatTokenRomaji from '../chat/SingleChatTokenRomaji';
+import SingleChatTokenPinyin from '../chat/SingleChatTokenPinyin';
 
 interface PropType {
   chat: ChatMessageType;
 }
 
+
+function pinyinExists(tokens: ChatToken[]): boolean {
+  for (const token of tokens) {
+    if (token.type === 'text' && token.language?.startsWith('zh')) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+function romajiExists(tokens: ChatToken[]): boolean {
+  for (const token of tokens) {
+    if (token.type === 'text' && token.language === 'ja') {
+      return true;
+    }
+  }
+  return false;
+}
+
+
 function ChatTranslationDetails({ chat }: PropType) {
+  const [originalTokens, setOriginalTokens] = useState<ChatToken[]>();
   const [translatedTokens, setTranslatedTokens] = useState<ChatToken[]>();
   const [chatSrcLang, setChatSrcLang] = useState<string>();
-  const [chatPinyin, setChatPinyin] = useState<string>();
-  const [chatRomaji, setChatRomaji] = useState<string>();
+  const [hasPinyin, setHasPinyin] = useState<boolean>();
+  const [hasRomaji, setHasRomaji] = useState<boolean>();
 
   const [translatedName, setTranslatedName] = useState<string>();
   const [nameSrcLang, setNameSrcLang] = useState<string>();
   const [namePinyin, setNamePinyin] = useState<string>();
   const [nameRomaji, setNameRomaji] = useState<string>();
+
+
+  const setDisplayName = (response?: TranslateNameResponse) => {
+    if (!response) {
+      return;
+    }
+    setTranslatedName(response.translated);
+    setNameSrcLang(ISO6391.getName(response.srcLang));
+    
+    // TODO: Handle this in backend
+    if (response.srcLang.startsWith('zh')) {
+      setNamePinyin(response.pronunciation?.pinyin);
+    }
+    else {
+      setNamePinyin(undefined);
+    }
+    
+    // TODO: Handle this in backend
+    if (response.srcLang === 'ja') {
+      setNameRomaji(response.pronunciation?.romaji);
+    }
+    else {
+      setNameRomaji(undefined);
+    }
+  }
 
   useEffect(() => {
     if (!chat) {
@@ -44,31 +94,13 @@ function ChatTranslationDetails({ chat }: PropType) {
       );
 
       const result = response.data;
+      setOriginalTokens(result.original);
       setTranslatedTokens(result.translated);
       setChatSrcLang(ISO6391.getName(result.srcLang));
+      setHasPinyin(pinyinExists(result.original));
+      setHasRomaji(romajiExists(result.original));
 
-      const displayName = result.displayName;
-      if (!displayName) {
-        return;
-      }
-      setTranslatedName(displayName.translated);
-      setNameSrcLang(ISO6391.getName(displayName.srcLang));
-      
-      // TODO: Handle this in backend
-      if (displayName.srcLang.startsWith('zh')) {
-        setNamePinyin(displayName.pronunciation?.pinyin);
-      }
-      else {
-        setNamePinyin(undefined);
-      }
-      
-      // TODO: Handle this in backend
-      if (displayName.srcLang === 'ja') {
-        setNameRomaji(displayName.pronunciation?.romaji);
-      }
-      else {
-        setNameRomaji(undefined);
-      }
+      setDisplayName(result.displayName);
     };
     func();
   }, [chat]);
@@ -84,7 +116,7 @@ function ChatTranslationDetails({ chat }: PropType) {
           <SingleChatToken token={token} />
         ))}
       </div>
-      {chatSrcLang && chatSrcLang !== 'auto' && (
+      {chatSrcLang && (
         <div className="py-2">
           <span className="font-medium pl-3 pr-4">Language</span>
           <span className="text-left">{chatSrcLang}</span>
@@ -99,6 +131,26 @@ function ChatTranslationDetails({ chat }: PropType) {
             )}
           </span>
         </div>
+      )}
+      {hasPinyin && (
+        <div className="py-2">
+        <span className="font-medium pl-3 pr-4">Pinyin</span>
+        <span className="text-left">
+          {originalTokens?.map((token) => 
+            <SingleChatTokenPinyin token={token} />
+          )}
+        </span>
+      </div>
+      )}
+      {hasRomaji && (
+        <div className="py-2">
+        <span className="font-medium pl-3 pr-4">Romaji</span>
+        <span className="text-left">
+          {originalTokens?.map((token) => 
+            <SingleChatTokenRomaji token={token} />
+          )}
+        </span>
+      </div>
       )}
 
       <div className="divider divider-vertical"/>

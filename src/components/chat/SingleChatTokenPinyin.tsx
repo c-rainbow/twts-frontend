@@ -16,6 +16,11 @@ function renderToken(token: ChatToken) {
           {token.text}
         </a>
       );
+    case 'text':
+      if (token.language?.startsWith('zh')) {
+        return <>{token.pronunciation?.pinyin}</>;
+      }
+      return <>{token.text}</>;
     default:
       return <>{token.text}</>;
   }
@@ -26,8 +31,8 @@ function renderToken(token: ChatToken) {
  * SingleChatToken, SingleChatTokenPinyin, SingleChatTokenRomaji
  */
 /**
- * Render a single chat token
+ * Render a single chat token, pinyin if applicable
  */
-export default function SingleChatToken({ token }: PropType) {
+export default function SingleChatTokenPinyin({ token }: PropType) {
   return <>{renderToken(token)} </>;
 }
