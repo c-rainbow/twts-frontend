@@ -13,8 +13,8 @@ import { useEffect } from 'react';
 
 import { useFollowInfoStore } from '@/states/follows';
 import type { FollowInfoType } from '@/types/types';
-import { useSelectedFollowInfoStore } from '../../states/follows';
 import FollowInfo from './FollowInfo';
+import { useSelectedInfoStore } from '@/states/selectInfo';
 
 function RecentFollowerList() {
   const [followInfos, addFollows] = useFollowInfoStore((state) => [
@@ -22,9 +22,7 @@ function RecentFollowerList() {
     state.addFollows,
   ]);
 
-  const [selectFollow] = useSelectedFollowInfoStore((state) => [
-    state.selectFollow,
-  ]);
+  const [selectFollow] = useSelectedInfoStore((state) => [state.selectFollow]);
 
   useEffect(() => {
     const firebaseConfig = {

@@ -4,12 +4,11 @@ import { Client } from 'tmi.js';
 
 import { makeChatMessage } from '@/libs/message';
 
-import TranslationInfo from '@/components/details/TranslationInfo';
-import ChatTranslationInfo from '@/components/details/ChatTranslationInfo';
 import ChatList from '@/components/chat/ChatList';
 import RecentFollowerList from '@/components/followers/RecentFollowerList';
 import { useRouter } from 'next/router';
 import { useChatListStore } from '@/states/chats';
+import TranslationDetails from '../components/details/TranslationDetails';
 
 // TODO: remove hardcoded channel name
 let client: Client | null = null;
@@ -72,7 +71,9 @@ function Home() {
               </label>
             </div>
             */}
-            <div className="mx-2 flex-1 px-2 text-2xl text-center justify-center">Translator</div>
+            <div className="mx-2 flex-1 px-2 text-2xl text-center justify-center">
+              Translator
+            </div>
             {/*
             <div className="hidden flex-none md:block">
               <ul className="menu menu-horizontal">
@@ -99,8 +100,7 @@ function Home() {
             {/* Right pane */}
             <div className="right-pane min-w-[350px]">
               <h1 className="text-xl py-3 text-center">Translation</h1>
-              <TranslationInfo />
-              <ChatTranslationInfo />
+              <TranslationDetails />
             </div>
           </div>
         </div>
