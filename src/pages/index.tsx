@@ -11,9 +11,10 @@ const Index = () => {
     if (!process.env.NEXT_PUBLIC_DEFAULT_CHANNEL) {
       return;
     }
-    router.push(
-      `http://localhost:3000/${process.env.NEXT_PUBLIC_DEFAULT_CHANNEL}`
-    );
+    const url = new URL(
+      process.env.NEXT_PUBLIC_DEFAULT_CHANNEL,
+      process.env.NEXT_PUBLIC_FRONTEND_BASE_URL);
+    router.push(url);
   }, []);
 
   return (
