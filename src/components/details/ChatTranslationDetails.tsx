@@ -91,7 +91,9 @@ function ChatTranslationDetails({ chat }: PropType) {
       const result = response.data;
       setOriginalTokens(result.original);
       setTranslatedTokens(result.translated);
-      setChatSrcLang(ISO6391.getName(result.srcLang));
+      setChatSrcLang(
+        result.srcLang ? ISO6391.getName(result.srcLang) : undefined
+      );
       setHasPinyin(pinyinExists(result.original));
       setHasRomaji(romajiExists(result.original));
 
