@@ -16,6 +16,7 @@ import type { FollowInfoType } from '@/types/types';
 import FollowInfo from './FollowInfo';
 import { useSelectedInfoStore } from '@/states/selectInfo';
 
+
 function RecentFollowerList() {
   const [followInfos, addFollows] = useFollowInfoStore((state) => [
     state.followInfos,
@@ -25,60 +26,50 @@ function RecentFollowerList() {
   const [selectFollow] = useSelectedInfoStore((state) => [state.selectFollow]);
 
   useEffect(() => {
-    const firebaseConfig = {
-      apiKey: 'AIzaSyDZmZmaoAf9q1FZY_OPWGWXJSkf1naxmH0',
-      authDomain: 'twts-test-project.firebaseapp.com',
-      projectId: 'twts-test-project',
-      storageBucket: 'twts-test-project.appspot.com',
-      messagingSenderId: '37259466365',
-      appId: '1:37259466365:web:d000c96002f0aa16160314',
-      measurementId: 'G-4X7RRF8KCE',
-    };
+    const firebaseConfig = process.env.NEXT_PUBLIC_FIREBASE_CONFIG;
+    if (!firebaseConfig) {
+      return;
+    }
 
     // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
+    const firebaseConfigJson = JSON.parse(firebaseConfig);
+    const app = initializeApp(firebaseConfigJson);
     const db = getFirestore(app);
 
-    const func = async () => {
       // TODO: remove hardcoded value
-      const q2 = query(
+      const recentFollowerQuery = query(
         collection(db, 'followers'),
         where('streamerId', '==', '403883450'),
         orderBy('timestamp', 'desc'),
-        limit(20)
+        limit(15)
       );
-      onSnapshot(q2, (snapshot) => {
-        // console.log("Current data: ", doc.data());
+
+      // Listen to the changes in recent followers
+      onSnapshot(recentFollowerQuery, (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            console.log('New: ', change.doc.data());
             addFollows([change.doc.data() as FollowInfoType]);
           }
-          /*
-          if (change.type === 'modified') {
-            console.log('Modified: ', change.doc.data());
-            updateFollowerList([change.doc.data() as FollowInfoType]);
-          }
-          if (change.type === 'removed') {
-            console.log('Removed: ', change.doc.data());
-          }
-          */
         });
       });
-    };
-    func();
   }, []);
 
   return (
     <div className="overflow-y-auto max-h-[600px]">
-      {followInfos.map((followInfo, index) => (
-        <FollowInfo
-          key={followInfo.followerId}
-          followInfo={followInfo}
-          index={index}
-          selectFollow={selectFollow}
-        />
-      ))}
+      {followInfos.length > 0 ? (
+        followInfos.map((followInfo, index) => (
+          <FollowInfo
+            key={followInfo.followerId}
+            followInfo={followInfo}
+            index={index}
+            selectFollow={selectFollow}
+          />
+        ))
+      ) : (
+        <div className="py-2 text-center text-gray-600">
+          Cannot fetch recent followers
+        </div>
+      )}
     </div>
   );
 }

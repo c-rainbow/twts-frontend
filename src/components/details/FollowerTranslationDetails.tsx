@@ -40,19 +40,16 @@ function FollowerTranslationDetails({ followInfo }: PropType) {
       // TODO: Handle this in backend
       if (result.srcLang.startsWith('zh')) {
         setPinyin(result.pronunciation?.pinyin);
-      }
-      else {
+      } else {
         setPinyin(undefined);
       }
-      
+
       // TODO: Handle this in backend
       if (result.srcLang === 'ja') {
         setRomaji(result.pronunciation?.romaji);
-      }
-      else {
+      } else {
         setRomaji(undefined);
       }
-      
     };
     func();
   }, [followInfo]);
@@ -88,7 +85,6 @@ function FollowerTranslationDetails({ followInfo }: PropType) {
           <span className="text-left">{romaji}</span>
         </div>
       )}
-      
     </div>
   );
 }
