@@ -113,13 +113,13 @@ function Home({ channelName, channelDisplayName, channelId }: PropType) {
   return (
     <>
       <Head>
-        <title>HyperChat</title>
+        <title>Hello</title>
       </Head>
       <div className="drawer">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
         <div className="drawer-content flex flex-col">
           {/* Navbar */}
-          <div className="navbar w-full bg-base-300">
+          <div className="navbar w-full bg-sky-100">
             <div className="mx-2 flex-1 justify-center px-2 text-center text-2xl">
               {getFullname(channelName, channelDisplayName)}
             </div>
