@@ -12,9 +12,8 @@ import { makeChatMessage } from '@/libs/message';
 import { useChatListStore } from '@/states/chats';
 
 import TranslationDetails from '../components/details/TranslationDetails';
+import { isTranslationSupported } from '../libs/channels';
 import { getFullname } from '../libs/username';
-
-let client: Client | null = null;
 
 function getChannelName(
   params: ParsedUrlQuery | undefined
@@ -36,9 +35,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const channelName = getChannelName(context.params);
   if (!channelName) {
     console.log('Channel name is empty');
-    return {
-      notFound: true,
-    };
+    return { notFound: true };
   }
 
   // Twitch credentials to get channel ID
@@ -46,10 +43,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const clientSecret = process.env.TWITCH_CLIENT_SECRET;
   if (!clientId || !clientSecret) {
     console.log('Twitch client ID or secret is empty');
-    return {
-      // TODO: Is "notFound" the right answer here?
-      notFound: true,
-    };
+    // TODO: Is "notFound" the right answer here?
+    return { notFound: true };
   }
 
   try {
@@ -60,10 +55,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const apiClient = new ApiClient({ authProvider });
     const user = await apiClient.users.getUserByName(channelName);
     if (!user) {
-      console.log('User for', channelName, 'is not found');
-      return {
-        notFound: true,
-      };
+      return { notFound: true };
+    }
+
+    const isSupportedChannel = isTranslationSupported(user.id);
+    if (!isSupportedChannel) {
+      return { notFound: true };
     }
 
     return {
@@ -75,10 +72,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   } catch (e: any) {
     console.log('Error while fetching user ID from Twitch', e);
-    return {
-      // TODO: Is "notFound" the right answer here?
-      notFound: true,
-    };
+    // TODO: Is "notFound" the right answer here?
+    return { notFound: true };
   }
 };
 
@@ -87,6 +82,8 @@ interface PropType {
   channelDisplayName: string;
   channelId: string;
 }
+
+let client: Client;
 
 function Home({ channelName, channelDisplayName, channelId }: PropType) {
   const [chatList, addChat] = useChatListStore((state) => [

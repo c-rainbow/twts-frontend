@@ -70,9 +70,7 @@ function RecentFollowerList({ channelId }: PropType) {
           />
         ))
       ) : (
-        <div className="py-2 text-center text-gray-600">
-          Cannot fetch recent followers
-        </div>
+        <div className="py-2 text-center text-gray-600">Loading...</div>
       )}
     </div>
   );
