@@ -1,4 +1,4 @@
-import { ChatToken, TwitchEmoteTags } from '@twtts/shared';
+import type { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 import type { Timestamp } from 'firebase/firestore';
 import type { ChatUserstate } from 'tmi.js';
 

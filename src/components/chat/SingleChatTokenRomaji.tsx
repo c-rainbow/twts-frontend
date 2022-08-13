@@ -1,4 +1,4 @@
-import { ChatToken } from '@twtts/shared';
+import type { ChatToken } from '@twtts/shared';
 
 interface PropType {
   token: ChatToken;
@@ -7,12 +7,18 @@ interface PropType {
 function renderToken(token: ChatToken) {
   switch (token.type) {
     case 'mention':
-      return <span className="font-semibold inline">{token.text}</span>;
+      return <span className="inline font-semibold">{token.text}</span>;
     case 'emote':
-      return <img className="inline" src={token.emote?.url} />;
+      return (
+        <img
+          className="inline"
+          src={token.emote?.url}
+          alt={token.emote?.name}
+        />
+      );
     case 'link':
       return (
-        <a href={token.text} target="_blank">
+        <a href={token.text} target="_blank" rel="noreferrer">
           {token.text}
         </a>
       );

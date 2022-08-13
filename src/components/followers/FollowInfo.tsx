@@ -1,5 +1,6 @@
 import { getFullname } from '@/libs/username';
-import { FollowInfoType } from '../../types/types';
+
+import type { FollowInfoType } from '../../types/types';
 
 interface PropType {
   followInfo: FollowInfoType;
@@ -10,7 +11,7 @@ interface PropType {
 function FollowInfo({ followInfo, index, selectFollow }: PropType) {
   return (
     <div
-      className="grid grid-cols-10 gap-4 py-1 hover:bg-gray-200 cursor-pointer"
+      className="grid cursor-pointer grid-cols-10 gap-4 py-1 hover:bg-gray-200"
       onClick={() => selectFollow(followInfo)}
     >
       <div className="col-span-1 font-semibold text-emerald-600">
@@ -23,7 +24,7 @@ function FollowInfo({ followInfo, index, selectFollow }: PropType) {
             followInfo.followerDisplayName
           )}
         </div>
-        <div className="font-light text-sm">
+        <div className="text-sm font-light">
           {new Date(followInfo.timestamp.seconds * 1000).toLocaleString()}
         </div>
       </div>

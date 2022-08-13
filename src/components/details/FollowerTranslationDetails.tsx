@@ -1,9 +1,14 @@
-import { getFullname } from '@/libs/username';
-import { useEffect, useState } from 'react';
-import { TranslateNameRequest, TranslateNameResponse } from '@twtts/shared';
-import apiclient from '../../libs/apiclient';
-import { FollowInfoType } from '@/types/types';
+import type {
+  TranslateNameRequest,
+  TranslateNameResponse,
+} from '@twtts/shared';
 import ISO6391 from 'iso-639-1';
+import { useEffect, useState } from 'react';
+
+import { getFullname } from '@/libs/username';
+import type { FollowInfoType } from '@/types/types';
+
+import apiclient from '../../libs/apiclient';
 
 interface PropType {
   followInfo: FollowInfoType;
@@ -60,28 +65,28 @@ function FollowerTranslationDetails({ followInfo }: PropType) {
 
   return (
     <div className="content">
-      <div className="text-xl font-medium py-3 text-center">
+      <div className="py-3 text-center text-xl font-medium">
         {getFullname(followInfo.followerLogin, followInfo.followerDisplayName)}
       </div>
       {srcLang && (
         <div className="py-2">
-          <span className="font-medium pl-3 pr-4">Language</span>
+          <span className="pl-3 pr-4 font-medium">Language</span>
           <span className="text-left">{srcLang}</span>
         </div>
       )}
       <div className="py-2">
-        <span className="font-medium pl-3 pr-4">Translation</span>
+        <span className="pl-3 pr-4 font-medium">Translation</span>
         <span className="text-left">{translation}</span>
       </div>
       {pinyin && (
         <div className="py-2">
-          <span className="font-medium pl-3 pr-4">Pinyin</span>
+          <span className="pl-3 pr-4 font-medium">Pinyin</span>
           <span className="text-left">{pinyin}</span>
         </div>
       )}
       {romaji && (
         <div className="py-2">
-          <span className="font-medium pl-3 pr-4">Romaji</span>
+          <span className="pl-3 pr-4 font-medium">Romaji</span>
           <span className="text-left">{romaji}</span>
         </div>
       )}

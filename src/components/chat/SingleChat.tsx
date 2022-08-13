@@ -1,8 +1,10 @@
-import type { ChatMessageType } from '@/types/types';
-import { ChatToken } from '@twtts/shared';
-import SingleChatToken from './SingleChatToken';
-import userColorCache from '../../libs/usercolor';
+import type { ChatToken } from '@twtts/shared';
+
 import { useSelectedInfoStore } from '@/states/selectInfo';
+import type { ChatMessageType } from '@/types/types';
+
+import userColorCache from '../../libs/usercolor';
+import SingleChatToken from './SingleChatToken';
 
 type SingleChatPropType = {
   chat: ChatMessageType;
@@ -13,7 +15,7 @@ export default function SingleChat({ chat }: SingleChatPropType) {
 
   return (
     <div
-      className="py-1 cursor-pointer hover:bg-gray-200"
+      className="cursor-pointer py-1 hover:bg-gray-200"
       onClick={() => selectChat(chat)}
     >
       <span
@@ -24,8 +26,8 @@ export default function SingleChat({ chat }: SingleChatPropType) {
       </span>
       :{' '}
       <span className="pr-1">
-        {chat.tokens.map((token: ChatToken) => (
-          <SingleChatToken token={token} />
+        {chat.tokens.map((token: ChatToken, index: number) => (
+          <SingleChatToken key={index} token={token} />
         ))}
       </span>
     </div>

@@ -1,36 +1,107 @@
+import { ApiClient } from '@twurple/api';
+import { ClientCredentialsAuthProvider } from '@twurple/auth';
+import type { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import type { ParsedUrlQuery } from 'querystring';
 import React, { useEffect } from 'react';
 import { Client } from 'tmi.js';
 
-import { makeChatMessage } from '@/libs/message';
-
 import ChatList from '@/components/chat/ChatList';
 import RecentFollowerList from '@/components/followers/RecentFollowerList';
-import { useRouter } from 'next/router';
+import { makeChatMessage } from '@/libs/message';
 import { useChatListStore } from '@/states/chats';
-import TranslationDetails from '../components/details/TranslationDetails';
 
-// TODO: remove hardcoded channel name
+import TranslationDetails from '../components/details/TranslationDetails';
+import { getFullname } from '../libs/username';
+
 let client: Client | null = null;
 
-function Home() {
-  const router = useRouter();
-  const { channelName } = router.query;
-  const channel = Array.isArray(channelName) ? channelName[0] : channelName;
+function getChannelName(
+  params: ParsedUrlQuery | undefined
+): string | undefined {
+  if (!params) {
+    return undefined;
+  }
+  const { channelName } = params;
+  if (typeof channelName === 'string') {
+    return channelName;
+  }
+  if (Array.isArray(channelName) && channelName.length > 0) {
+    return channelName[0];
+  }
+  return undefined;
+}
 
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const channelName = getChannelName(context.params);
+  if (!channelName) {
+    console.log('Channel name is empty');
+    return {
+      notFound: true,
+    };
+  }
+
+  // Twitch credentials to get channel ID
+  const clientId = process.env.TWITCH_CLIENT_ID;
+  const clientSecret = process.env.TWITCH_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    console.log('Twitch client ID or secret is empty');
+    return {
+      // TODO: Is "notFound" the right answer here?
+      notFound: true,
+    };
+  }
+
+  try {
+    const authProvider = new ClientCredentialsAuthProvider(
+      clientId!,
+      clientSecret!
+    );
+    const apiClient = new ApiClient({ authProvider });
+    const user = await apiClient.users.getUserByName(channelName);
+    if (!user) {
+      console.log('User for', channelName, 'is not found');
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        channelName: user.name,
+        channelDisplayName: user.displayName,
+        channelId: user.id,
+      },
+    };
+  } catch (e: any) {
+    console.log('Error while fetching user ID from Twitch', e);
+    return {
+      // TODO: Is "notFound" the right answer here?
+      notFound: true,
+    };
+  }
+};
+
+interface PropType {
+  channelName: string;
+  channelDisplayName: string;
+  channelId: string;
+}
+
+function Home({ channelName, channelDisplayName, channelId }: PropType) {
   const [chatList, addChat] = useChatListStore((state) => [
     state.chats,
     state.addChat,
   ]);
 
   useEffect(() => {
-    if (!channel) {
+    if (!channelName) {
       return;
     }
 
     if (!client) {
       client = new Client({
-        channels: [channel],
+        channels: [channelName],
       });
       client.connect();
       console.log('connected to client');
@@ -40,7 +111,7 @@ function Home() {
         addChat(chatMessage);
       });
     }
-  }, [channel]);
+  }, [channelName]);
 
   return (
     <>
@@ -52,71 +123,29 @@ function Home() {
         <div className="drawer-content flex flex-col">
           {/* Navbar */}
           <div className="navbar w-full bg-base-300">
-            {/*
-            <div className="flex-none md:hidden">
-              <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  className="inline-block h-6 w-6 stroke-current"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  ></path>
-                </svg>
-              </label>
+            <div className="mx-2 flex-1 justify-center px-2 text-center text-2xl">
+              {getFullname(channelName, channelDisplayName)}
             </div>
-            */}
-            <div className="mx-2 flex-1 px-2 text-2xl text-center justify-center">
-              Translator
-            </div>
-            {/*
-            <div className="hidden flex-none md:block">
-              <ul className="menu menu-horizontal">
-                {/* Navbar menu content here. Separate definition for sidebar content
-                <li>
-                  <a onClick={() => alert('config')}>Config</a>
-                </li>
-              </ul>
-            </div>
-            */}
           </div>
           {/* Page content here */}
-          <div className="content px-2 grid grid-cols-3 gap-3 min-w-[1075px]">
+          <div className="content grid min-w-[1075px] grid-cols-3 gap-3 px-2">
             {/* Left pane */}
-            <div className="left-pane min-w-[350px]">
-              <h1 className="text-xl py-3 text-center">Recent Followers</h1>
-              <RecentFollowerList />
+            <div className="min-w-[350px]">
+              <h1 className="py-3 text-center text-xl">Recent Followers</h1>
+              <RecentFollowerList channelId={channelId} />
             </div>
             {/* Middle pane */}
-            <div className="middle-pane min-w-[350px]">
-              <h1 className="text-xl py-3 text-center">Chats</h1>
+            <div className="min-w-[350px]">
+              <h1 className="py-3 text-center text-xl">Chats</h1>
               <ChatList chatList={chatList} />
             </div>
             {/* Right pane */}
-            <div className="right-pane min-w-[350px]">
-              <h1 className="text-xl py-3 text-center">Translation</h1>
+            <div className="min-w-[350px]">
+              <h1 className="py-3 text-center text-xl">Translation</h1>
               <TranslationDetails />
             </div>
           </div>
         </div>
-        {/*
-        <div className="drawer-side">
-          <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
-          <ul className="menu w-80 overflow-y-auto bg-base-100 p-4">
-            <li>
-              <a onClick={() => alert('test 1')}>Do something 1</a>
-            </li>
-            <li>
-              <a onClick={() => alert('test 2')}>Do something 2</a>
-            </li>
-          </ul>
-        </div>
-        */}
       </div>
     </>
   );

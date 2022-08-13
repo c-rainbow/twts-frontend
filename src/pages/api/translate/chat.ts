@@ -1,6 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { TranslateChatResponse } from '@twtts/shared';
+import type { TranslateChatResponse } from '@twtts/shared';
 import axios from 'axios';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const client = axios.create({
   baseURL: process.env.CORE_TRANSLATION_SERVICE_BASE_URL,

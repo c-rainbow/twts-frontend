@@ -1,6 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { TranslateNameResponse } from '@twtts/shared';
+import type { TranslateNameResponse } from '@twtts/shared';
 import axios from 'axios';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 const client = axios.create({
   baseURL: process.env.CORE_TRANSLATION_SERVICE_BASE_URL,
@@ -17,8 +17,6 @@ export default async function handler(
     res.status(405);
     return;
   }
-
-  console.log('body:', req.body);
 
   const response = await client.post<TranslateNameResponse>(
     '/translate/name',

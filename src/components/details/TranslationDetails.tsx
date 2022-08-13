@@ -1,4 +1,5 @@
 import { useSelectedInfoStore } from '@/states/selectInfo';
+
 import ChatTranslationDetails from './ChatTranslationDetails';
 import FollowerTranslationDetails from './FollowerTranslationDetails';
 

@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react';
-import SingleChatToken from '../chat/SingleChatToken';
-import {
+import type {
   ChatToken,
-  TranslateChatResponse,
   TranslateChatRequest,
+  TranslateChatResponse,
+  TranslateNameResponse,
 } from '@twtts/shared';
-import apiclient from '../../libs/apiclient';
-import { ChatMessageType } from '../../types/types';
 import ISO6391 from 'iso-639-1';
-import { TranslateNameResponse } from '@twtts/shared';
-import SingleChatTokenRomaji from '../chat/SingleChatTokenRomaji';
+import { useEffect, useState } from 'react';
+
+import apiclient from '../../libs/apiclient';
+import type { ChatMessageType } from '../../types/types';
+import SingleChatToken from '../chat/SingleChatToken';
 import SingleChatTokenPinyin from '../chat/SingleChatTokenPinyin';
+import SingleChatTokenRomaji from '../chat/SingleChatTokenRomaji';
 
 interface PropType {
   chat: ChatMessageType;
@@ -105,43 +106,43 @@ function ChatTranslationDetails({ chat }: PropType) {
 
   return (
     <div className="content">
-      <div className="font-medium py-3 text-center">
-        {chat.tokens.map((token) => (
-          <SingleChatToken token={token} />
+      <div className="py-3 text-center font-medium">
+        {chat.tokens.map((token, index) => (
+          <SingleChatToken key={index} token={token} />
         ))}
       </div>
       {chatSrcLang && (
         <div className="py-2">
-          <span className="font-medium pl-3 pr-4">Language</span>
+          <span className="pl-3 pr-4 font-medium">Language</span>
           <span className="text-left">{chatSrcLang}</span>
         </div>
       )}
       {translatedTokens && (
         <div className="py-2">
-          <span className="font-medium pl-3 pr-4">Translation</span>
+          <span className="pl-3 pr-4 font-medium">Translation</span>
           <span className="text-left">
-            {translatedTokens.map((token) => (
-              <SingleChatToken token={token} />
+            {translatedTokens.map((token, index) => (
+              <SingleChatToken key={index} token={token} />
             ))}
           </span>
         </div>
       )}
       {hasPinyin && (
         <div className="py-2">
-          <span className="font-medium pl-3 pr-4">Pinyin</span>
+          <span className="pl-3 pr-4 font-medium">Pinyin</span>
           <span className="text-left">
-            {originalTokens?.map((token) => (
-              <SingleChatTokenPinyin token={token} />
+            {originalTokens?.map((token, index) => (
+              <SingleChatTokenPinyin key={index} token={token} />
             ))}
           </span>
         </div>
       )}
       {hasRomaji && (
         <div className="py-2">
-          <span className="font-medium pl-3 pr-4">Romaji</span>
+          <span className="pl-3 pr-4 font-medium">Romaji</span>
           <span className="text-left">
-            {originalTokens?.map((token) => (
-              <SingleChatTokenRomaji token={token} />
+            {originalTokens?.map((token, index) => (
+              <SingleChatTokenRomaji key={index} token={token} />
             ))}
           </span>
         </div>
@@ -152,28 +153,28 @@ function ChatTranslationDetails({ chat }: PropType) {
       {translatedName && (
         <>
           <div className="py-2">
-            <span className="font-medium pl-3 pr-4">Chatter</span>
+            <span className="pl-3 pr-4 font-medium">Chatter</span>
             <span className="text-left">{chat.displayName}</span>
           </div>
           {nameSrcLang && (
             <div className="py-2">
-              <span className="font-medium pl-3 pr-4">Language</span>
+              <span className="pl-3 pr-4 font-medium">Language</span>
               <span className="text-left">{nameSrcLang}</span>
             </div>
           )}
           <div className="py-2">
-            <span className="font-medium pl-3 pr-4">Translation</span>
+            <span className="pl-3 pr-4 font-medium">Translation</span>
             <span className="text-left">{translatedName}</span>
           </div>
           {namePinyin && (
             <div className="py-2">
-              <span className="font-medium pl-3 pr-4">Pinyin</span>
+              <span className="pl-3 pr-4 font-medium">Pinyin</span>
               <span className="text-left">{namePinyin}</span>
             </div>
           )}
           {nameRomaji && (
             <div className="py-2">
-              <span className="font-medium pl-3 pr-4">Romaji</span>
+              <span className="pl-3 pr-4 font-medium">Romaji</span>
               <span className="text-left">{nameRomaji}</span>
             </div>
           )}

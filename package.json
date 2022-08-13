@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@twtts/shared": "^1.0.5",
+    "@twurple/api": "^5.2.1",
+    "@twurple/auth": "^5.2.1",
     "axios": "^0.27.2",
     "daisyui": "^2.22.0",
     "firebase": "^9.9.2",

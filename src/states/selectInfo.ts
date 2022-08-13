@@ -1,5 +1,6 @@
-import { ChatMessageType, FollowInfoType } from '@/types/types';
 import create from 'zustand';
+
+import type { ChatMessageType, FollowInfoType } from '@/types/types';
 
 export interface SelectedInfoState {
   chat?: ChatMessageType;

@@ -1,28 +1,18 @@
+import type { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 import type { ChatUserstate } from 'tmi.js';
 
-import type { ChatMessageType } from '@/types/types';
-import { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 import tokenizer from '@/libs/tokenizer';
-import { getFullname } from './username';
+import type { ChatMessageType } from '@/types/types';
 
-export async function makeChatMessage(
-  channel: string,
-  userstate: ChatUserstate,
-  message: string
-): Promise<ChatMessageType> {
-  const channelId = userstate['room-id']!; // This tag always exists.
-  const tokens = await tokenizer.tokenize(
-    channelId,
-    message,
-    userstate.emotes || {}
-  );
-  return new ChatMessage(channel, userstate, message, tokens);
-}
+import { getFullname } from './username';
 
 class ChatMessage implements ChatMessageType {
   readonly channel: string;
+
   readonly userstate: ChatUserstate;
+
   readonly message: string;
+
   readonly tokens: ChatToken[];
 
   constructor(
@@ -79,4 +69,18 @@ class ChatMessage implements ChatMessageType {
   get isEmoteOnly() {
     return this.tokens.filter((token) => token.type !== 'emote') === [];
   }
+}
+
+export async function makeChatMessage(
+  channel: string,
+  userstate: ChatUserstate,
+  message: string
+): Promise<ChatMessageType> {
+  const channelId = userstate['room-id']!; // This tag always exists.
+  const tokens = await tokenizer.tokenize(
+    channelId,
+    message,
+    userstate.emotes || {}
+  );
+  return new ChatMessage(channel, userstate, message, tokens);
 }

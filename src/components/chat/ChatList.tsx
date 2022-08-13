@@ -7,7 +7,7 @@ type PropType = {
 
 export default function ChatList({ chatList }: PropType) {
   return (
-    <div className="min-w-[350px] overflow-y-auto max-h-[600px] text-base px-2">
+    <div className="max-h-[600px] min-w-[350px] overflow-y-auto px-2 text-base">
       {chatList.map((singleChat: ChatMessageType) => {
         return <SingleChat key={singleChat.uuid} chat={singleChat} />;
       })}
