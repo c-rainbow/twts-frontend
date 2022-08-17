@@ -3,10 +3,15 @@ import type { ChatMessageType } from '../../types/types';
 import SingleChat from './SingleChat';
 
 /**
- * @param elem HTML element to check
- * @returns true if the scroll is within 5px from the bottom of the element
+ * 
  */
 function isScrollAlmostAtBottom(elem: HTMLElement): boolean {
+  // Always true if scrollbar is not present
+  if (elem.offsetHeight === elem.scrollHeight) {
+    return true;
+  }
+
+  // If the scroll is within 5px from the bottom of the element
   const scrollBottomPos = elem.scrollTop + elem.offsetHeight + 5;
   return scrollBottomPos >= elem.scrollHeight;
 }
@@ -20,17 +25,12 @@ export default function ChatList({ chatList }: PropType) {
   const chatListRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = () => {
-    const objDiv = chatListRef.current;
-    if (!objDiv) {
+    const elem = chatListRef.current;
+    if (!elem) {
       return;
     }
 
-    if (isScrollAlmostAtBottom(objDiv)) {
-      console.log('scroll is at the bottom');
-    } else {
-      // TODO: show the floating notification
-      console.log('scroll is not at the bottom', objDiv.scrollTop);
-    }
+    setShowScrollPaused(!isScrollAlmostAtBottom(elem));
   };
 
   useEffect(() => {
@@ -40,9 +40,13 @@ export default function ChatList({ chatList }: PropType) {
     }
 
     // Only auto-scroll to the bottom if the scroll is already at the bottom
-    /*if (!isScrollAlmostAtBottom(elem)) {
+    if (showScrollPaused) {
+      console.log('Scroll is not almost at the bottom');
       return;
-    }*/
+    }
+    else {
+      console.log('Scroll is almost at the bottom');
+    }
 
     elem.scrollTo({
       top: elem.scrollHeight,
@@ -59,11 +63,11 @@ export default function ChatList({ chatList }: PropType) {
       {chatList.map((singleChat: ChatMessageType) => {
         return <SingleChat key={singleChat.uuid} chat={singleChat} />;
       })}
-      {showScrollPaused && (
+      {/*showScrollPaused && (
         <div className="sticky bottom-4 align-center btn glass">
           test
         </div>
-      )}
+      )*/}
     </div>
   );
 }
