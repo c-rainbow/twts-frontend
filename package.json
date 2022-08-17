@@ -11,6 +11,7 @@
     "build-prod": "run-s clean build export",
     "clean": "rimraf .next out",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
     "format": "prettier --write src/**/*.ts src/**/*.tsx",
     "check-types": "tsc --noEmit --pretty",
     "test": "jest",
