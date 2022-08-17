@@ -8,8 +8,11 @@ function scrollToBottom(elem?: HTMLElement | null, behavior?: ScrollBehavior) {
     return;
   }
 
+  // TODO: Adding 1000px to the bottom of scroll height is an experiment.
+  // There is a bug that autoscroll ia sometimes randomly disabled,
+  // and adding some additional pixels seems to decrease the frequency.
   elem.scrollTo({
-    top: elem.scrollHeight,
+    top: elem.scrollHeight + 1000,
     behavior,
   });
 }
@@ -26,8 +29,10 @@ function isScrollAlmostAtBottom(elem: HTMLElement): boolean {
     return true;
   }
 
-  // If the scroll is within 5px from the bottom of the element
-  const scrollBottomPos = elem.scrollTop + elem.offsetHeight + 5;
+  // If the scroll is within 30px from the bottom of the element
+  // 30px was decided after manual experiments with mouse wheels.
+  // Additional pixels sometimes prevent disabled autoscroll issues.
+  const scrollBottomPos = elem.scrollTop + elem.offsetHeight + 30;
   return scrollBottomPos >= elem.scrollHeight;
 }
 
@@ -36,8 +41,11 @@ type PropType = {
 };
 
 export default function ChatList({ chatList }: PropType) {
-  const [isScrollInMiddle, setIsScrollInMiddle] = useState<boolean>(false);
+  const [autoScroll, setAutoScroll] = useState<boolean>(true);
   const chatListRef = useRef<HTMLDivElement>(null);
+  const lastChatId = chatList.length
+    ? chatList[chatList.length - 1]?.uuid
+    : null;
 
   const handleScroll = () => {
     const elem = chatListRef.current;
@@ -45,21 +53,19 @@ export default function ChatList({ chatList }: PropType) {
       return;
     }
 
-    setIsScrollInMiddle(!isScrollAlmostAtBottom(elem));
+    setAutoScroll(isScrollAlmostAtBottom(elem));
   };
 
   const clickScrollToBottom = () => {
+    setAutoScroll(true);
     scrollToBottom(chatListRef.current);
   };
 
   useEffect(() => {
-    // Only auto-scroll to the bottom if the scroll is already at the bottom
-    if (isScrollInMiddle) {
-      return;
+    if (autoScroll) {
+      scrollToBottom(chatListRef.current);
     }
-
-    scrollToBottom(chatListRef.current);
-  }, [chatListRef.current, chatList.length]);
+  }, [chatListRef.current, lastChatId]);
 
   return (
     <div
@@ -70,7 +76,7 @@ export default function ChatList({ chatList }: PropType) {
       {chatList.map((singleChat: ChatMessageType) => {
         return <SingleChat key={singleChat.uuid} chat={singleChat} />;
       })}
-      {isScrollInMiddle && (
+      {!autoScroll && (
         <div
           className="btn sticky bottom-4 w-full opacity-80"
           onClick={clickScrollToBottom}
