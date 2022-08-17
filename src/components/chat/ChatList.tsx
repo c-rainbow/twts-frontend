@@ -2,10 +2,24 @@ import { useEffect, useRef, useState } from 'react';
 import type { ChatMessageType } from '../../types/types';
 import SingleChat from './SingleChat';
 
-/**
- * 
- */
+function scrollToBottom(elem?: HTMLElement | null, behavior?: ScrollBehavior) {
+  if (!elem) {
+    return;
+  }
+
+  elem.scrollTo({
+    top: elem.scrollHeight,
+    behavior,
+  });
+}
+
 function isScrollAlmostAtBottom(elem: HTMLElement): boolean {
+  // Always return true if the element is not ready.
+  // It means that the scrollbar is not present.
+  if (!elem) {
+    return true;
+  }
+
   // Always true if scrollbar is not present
   if (elem.offsetHeight === elem.scrollHeight) {
     return true;
@@ -21,7 +35,7 @@ type PropType = {
 };
 
 export default function ChatList({ chatList }: PropType) {
-  const [showScrollPaused, setShowScrollPaused] = useState<boolean>(false);
+  const [isScrollInMiddle, setIsScrollInMiddle] = useState<boolean>(false);
   const chatListRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = () => {
@@ -30,44 +44,42 @@ export default function ChatList({ chatList }: PropType) {
       return;
     }
 
-    setShowScrollPaused(!isScrollAlmostAtBottom(elem));
+    setIsScrollInMiddle(!isScrollAlmostAtBottom(elem));
+  };
+
+  const clickScrollToBottom = () => {
+    scrollToBottom(chatListRef.current);
   };
 
   useEffect(() => {
-    const elem = chatListRef.current;
-    if (!elem || !chatList.length) {
-      return;
-    }
-
     // Only auto-scroll to the bottom if the scroll is already at the bottom
-    if (showScrollPaused) {
+    if (isScrollInMiddle) {
       console.log('Scroll is not almost at the bottom');
       return;
-    }
-    else {
+    } else {
       console.log('Scroll is almost at the bottom');
     }
 
-    elem.scrollTo({
-      top: elem.scrollHeight,
-      behavior: 'auto', // can be 'smooth'
-    });
+    scrollToBottom(chatListRef.current);
   }, [chatListRef.current, chatList.length]);
 
   return (
     <div
-      className="max-h-[100px] min-w-[350px] overflow-y-auto px-2 text-base"
+      className="max-h-[600px] min-w-[350px] overflow-y-auto px-2 text-base"
       ref={chatListRef}
       onScroll={handleScroll}
     >
       {chatList.map((singleChat: ChatMessageType) => {
         return <SingleChat key={singleChat.uuid} chat={singleChat} />;
       })}
-      {/*showScrollPaused && (
-        <div className="sticky bottom-4 align-center btn glass">
-          test
+      {isScrollInMiddle && (
+        <div
+          className="sticky bottom-4 w-full btn opacity-80"
+          onClick={clickScrollToBottom}
+        >
+          Click to see recent messages
         </div>
-      )*/}
+      )}
     </div>
   );
 }
