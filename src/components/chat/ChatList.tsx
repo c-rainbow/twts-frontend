@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+
 import type { ChatMessageType } from '../../types/types';
 import SingleChat from './SingleChat';
 
@@ -54,10 +55,7 @@ export default function ChatList({ chatList }: PropType) {
   useEffect(() => {
     // Only auto-scroll to the bottom if the scroll is already at the bottom
     if (isScrollInMiddle) {
-      console.log('Scroll is not almost at the bottom');
       return;
-    } else {
-      console.log('Scroll is almost at the bottom');
     }
 
     scrollToBottom(chatListRef.current);
@@ -74,7 +72,7 @@ export default function ChatList({ chatList }: PropType) {
       })}
       {isScrollInMiddle && (
         <div
-          className="sticky bottom-4 w-full btn opacity-80"
+          className="btn sticky bottom-4 w-full opacity-80"
           onClick={clickScrollToBottom}
         >
           Click to see recent messages
