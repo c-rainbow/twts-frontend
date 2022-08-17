@@ -113,7 +113,7 @@ function Home({ channelName, channelDisplayName, channelId }: PropType) {
   return (
     <>
       <Head>
-        <title>Hello</title>
+        <title>Hello2</title>
       </Head>
       <div className="drawer">
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
@@ -125,7 +125,7 @@ function Home({ channelName, channelDisplayName, channelId }: PropType) {
             </div>
           </div>
           {/* Page content here */}
-          <div className="content grid min-w-[1075px] grid-cols-3 gap-3 px-2">
+          <div className="content grid min-w-[1075px] grid-cols-3 gap-3 px-2 break-words">
             {/* Left pane */}
             <div className="min-w-[350px]">
               <h1 className="py-3 text-center text-xl">Recent Followers</h1>
