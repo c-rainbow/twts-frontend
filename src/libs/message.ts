@@ -1,5 +1,5 @@
 import type { ChatToken, TwitchEmoteTags } from '@twtts/shared';
-import type { ChatUserstate } from 'tmi.js';
+import type { ChatUserstate, CommonUserstate, UserNoticeState } from 'tmi.js';
 
 import tokenizer from '@/libs/tokenizer';
 import type { ChatMessageType } from '@/types/types';
@@ -9,7 +9,7 @@ import { getFullname } from './username';
 class ChatMessage implements ChatMessageType {
   readonly channel: string;
 
-  readonly userstate: ChatUserstate;
+  readonly userstate: CommonUserstate;
 
   readonly message: string;
 
@@ -17,7 +17,7 @@ class ChatMessage implements ChatMessageType {
 
   constructor(
     channel: string,
-    userstate: ChatUserstate,
+    userstate: CommonUserstate,
     message: string,
     tokens: ChatToken[]
   ) {
@@ -59,6 +59,10 @@ class ChatMessage implements ChatMessageType {
     return this.userstate.emotes || {};
   }
 
+  get messageType(): string {
+    return this.userstate['message-type'];
+  }
+
   get textMessage() {
     const textTokens = this.tokens
       .filter((token) => token.type === 'text')
@@ -83,4 +87,39 @@ export async function makeChatMessage(
     userstate.emotes || {}
   );
   return new ChatMessage(channel, userstate, message, tokens);
+}
+
+class NoticeMessage extends ChatMessage {
+  private _username: string | undefined;
+
+  constructor(
+    channel: string,
+    userstate: CommonUserstate,
+    message: string,
+    tokens: ChatToken[],
+    username?: string
+  ) {
+    super(channel, userstate, message, tokens);
+    this._username = username;
+  }
+
+  get username(): string {
+    return this._username || '';
+  }
+}
+
+export async function makeNoticeMessage(
+  channel: string,
+  userstate: UserNoticeState,
+  message?: string,
+  username?: string
+): Promise<ChatMessageType> {
+  const channelId = userstate['room-id']!; // This tag always exists.
+  const finalMessage = message || userstate.message || '';
+  const tokens = await tokenizer.tokenize(
+    channelId,
+    finalMessage,
+    userstate.emotes || {}
+  );
+  return new NoticeMessage(channel, userstate, finalMessage, tokens, username);
 }
