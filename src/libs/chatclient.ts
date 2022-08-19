@@ -24,8 +24,7 @@ export function getChatClient(
     try {
       const chatMessage = await makeChatMessage(channel, userstate, message);
       addChat(chatMessage);
-    }
-    catch(e: any)  {
+    } catch (e: any) {
       // TODO: do nothing for now. Make sure that this works.
     }
   });
