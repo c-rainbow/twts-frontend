@@ -36,6 +36,7 @@
       "rules": {
         "no-underscore-dangle": "off",
         "no-restricted-syntax": "off",
+        "max-classes-per-file": "off",
         "prettier/prettier": [
           "error",
           {
