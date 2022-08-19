@@ -4,15 +4,15 @@ import type { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import type { ParsedUrlQuery } from 'querystring';
 import React, { useEffect } from 'react';
-import { Client } from 'tmi.js';
+import type { Client } from 'tmi.js';
 
 import ChatList from '@/components/chat/ChatList';
 import RecentFollowerList from '@/components/followers/RecentFollowerList';
-import { makeChatMessage } from '@/libs/message';
 import { useChatListStore } from '@/states/chats';
 
 import TranslationDetails from '../components/details/TranslationDetails';
 import { isTranslationSupported } from '../libs/channels';
+import { getChatClient } from '../libs/chatclient';
 import { getFullname } from '../libs/username';
 
 function getChannelName(
@@ -97,16 +97,9 @@ function Home({ channelName, channelDisplayName, channelId }: PropType) {
     }
 
     if (!client) {
-      client = new Client({
-        channels: [channelName],
-      });
+      client = getChatClient([channelName], addChat);
       client.connect();
       console.log('connected to client');
-
-      client.on('message', async (channel, userstate, message) => {
-        const chatMessage = await makeChatMessage(channel, userstate, message);
-        addChat(chatMessage);
-      });
     }
   }, [channelName]);
 

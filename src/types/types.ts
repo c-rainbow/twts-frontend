@@ -1,10 +1,10 @@
 import type { ChatToken, TwitchEmoteTags } from '@twtts/shared';
 import type { Timestamp } from 'firebase/firestore';
-import type { ChatUserstate } from 'tmi.js';
+import type { CommonUserstate } from 'tmi.js';
 
 export interface ChatMessageType {
   channel: string; // Channel name (streamer's username)
-  userstate: ChatUserstate;
+  userstate: CommonUserstate;
   message: string;
   tokens: ChatToken[];
 
